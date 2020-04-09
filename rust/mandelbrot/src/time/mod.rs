@@ -23,6 +23,7 @@ impl Clock {
 }
 
 ///A Wrapper around the timespec struct from c.
+#[derive(Clone)]
 pub struct MyTimestamp {
     ts: timespec,
 }
@@ -47,7 +48,7 @@ impl MyTimestamp {
     ///Computes the passed time between two timestamps of type MyTimestamp in ms.
     pub fn compute_time_millis(&self, end: Self) -> f64 {
         (end.ts.tv_sec - self.ts.tv_sec) as f64 * 1000.0
-            + (1_000_000_000 - self.ts.tv_nsec + end.ts.tv_nsec) as f64 / 1_000_000.0
+            + (end.ts.tv_nsec - self.ts.tv_nsec) as f64 / 1_000_000.0
     }
 
     ///Call of the c function clock_gettime to get a timestamp.
@@ -58,4 +59,40 @@ impl MyTimestamp {
             Ok(())
         }
     }
+}
+
+#[test]
+fn test_compute_time_millis() {
+    let x1 = MyTimestamp {
+        ts: timespec {
+            tv_sec: 3,
+            tv_nsec: 0_000_000_000,
+        },
+    };
+
+    let x2 = MyTimestamp {
+        ts: timespec {
+            tv_sec: 4,
+            tv_nsec: 0_000_000_000,
+        },
+    };
+
+    let x3 = MyTimestamp {
+        ts: timespec {
+            tv_sec: 4,
+            tv_nsec: 0_500_000_000,
+        },
+    };
+
+    let x4 = MyTimestamp {
+        ts: timespec {
+            tv_sec: 6,
+            tv_nsec: 0_200_000_000,
+        },
+    };
+
+    assert_eq!(x1.compute_time_millis(x2.clone()), 1000 as f64);
+    assert_eq!(x1.compute_time_millis(x3.clone()), 1500 as f64);
+    assert_eq!(x2.compute_time_millis(x3.clone()), 500 as f64);
+    assert_eq!(x3.compute_time_millis(x4), 1700 as f64);
 }

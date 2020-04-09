@@ -17,7 +17,7 @@ pub fn time_with_crossbeam(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
-    number_of_threads: usize
+    number_of_threads: usize,
 ) -> Result<f64, CustomError> {
     let mut pixels = vec![0; bounds.0 * bounds.1];
     //Round the count upward to make sure that the bands cover the entire image.

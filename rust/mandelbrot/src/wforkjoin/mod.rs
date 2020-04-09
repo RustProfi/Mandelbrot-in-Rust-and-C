@@ -7,7 +7,7 @@ use std::sync::Mutex;
 use std::thread;
 
 ///Measure in ms how long it takes to compute an image of the mandelbrot set in parallel using the
-///standard library only with Arc and Mutex.
+///standard library only.
 
 /// # Arguments
 ///
@@ -19,7 +19,7 @@ pub fn time_fork_join(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
-    number_of_threads: usize
+    number_of_threads: usize,
 ) -> Result<f64, CustomError> {
     let arr_size = bounds.0 * bounds.1;
     let pixels: Arc<Mutex<Vec<u8>>> = Arc::new(Mutex::new(vec![0; arr_size]));

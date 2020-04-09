@@ -25,7 +25,7 @@ pub fn time_fork_join_unsafe(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
-    number_of_threads: usize
+    number_of_threads: usize,
 ) -> Result<f64, CustomError> {
     let arr_size = bounds.0 * bounds.1;
     let v = vec![0 as u8; arr_size];
