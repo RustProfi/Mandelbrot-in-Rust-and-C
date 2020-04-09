@@ -1,6 +1,7 @@
 extern crate image;
 use std::fmt;
 
+///A Customerror which implements selfmade error types and a wrapper around existing error types.
 pub enum CustomError {
     UnfittingArray,
     IoError(std::io::Error),

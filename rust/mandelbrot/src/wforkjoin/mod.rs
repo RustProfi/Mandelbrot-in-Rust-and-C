@@ -1,27 +1,38 @@
 use crate::customerror::CustomError;
 use crate::mandel::{pixel_to_point, render_fork_join};
-use crate::time::{Clock, MyTimer};
+use crate::time::{Clock, MyTimestamp};
 use num::Complex;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::thread;
 
+///Measure in ms how long it takes to compute an image of the mandelbrot set in parallel using the
+///standard library only with Arc and Mutex.
+
+/// # Arguments
+///
+/// * `bounds` - The length and width of the image
+/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
+/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
+/// * `number_of_threads` - The number of threads and at the same time the number of chunks.
 pub fn time_fork_join(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
+    number_of_threads: usize
 ) -> Result<f64, CustomError> {
     let arr_size = bounds.0 * bounds.1;
     let pixels: Arc<Mutex<Vec<u8>>> = Arc::new(Mutex::new(vec![0; arr_size]));
-    let number_of_threads = 8;
+    //Round the count upward to make sure that the bands cover the entire image.
     let rows_per_band = bounds.1 / number_of_threads + 1;
     let chunk_size = rows_per_band * bounds.0;
     let mut threads = vec![];
 
-    let mut start = MyTimer::new();
-    let mut end = MyTimer::new();
+    let mut start = MyTimestamp::new();
+    let mut end = MyTimestamp::new();
 
     start.gettime(Clock::ClockMonotonicRaw)?;
+    //Iterate over arr_size in steps to create selfmade chunks.
     for (i, offset) in (0..arr_size).step_by(chunk_size).enumerate() {
         let pixels_ref = pixels.clone();
         let chunk_length = if arr_size - offset > chunk_size {

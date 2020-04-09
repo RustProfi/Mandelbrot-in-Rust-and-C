@@ -68,14 +68,17 @@ fn test_pixel_to_point() {
 }
 
 ///Render a rectangle of the Mandelbrot set into a buffer of pixels.
-///The `bounds` argument gives the
-///which holds one grayscale pixel
-///arguments specify points on the
-///left and lower-right corners of
-///width and height of the buffer `pixels`,
-///per byte. The `upper_left` and `lower_right`
-///complex plane corresponding to the upper-
-///the pixel buffer.
+///The `bounds` argument gives the width and height of the buffer `pixels`,
+///which holds one grayscale pixel per byte. The `upper_left` and `lower_right`
+///arguments specify points on the complex plane corresponding to the upper-
+///left and lower-right corners of the pixel buffer.
+
+/// # Arguments
+///
+/// * `pixels` - A buffer or a chunk.
+/// * `bounds` - A tuple which holds the bounds of the image.
+/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
+/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
 
 pub fn render(
     pixels: &mut [u8],
@@ -87,6 +90,7 @@ pub fn render(
         return Err(CustomError::UnfittingArray);
     }
 
+    //Check for every pixel wether it is in the mandelbrot set or not.
     for row in 0..bounds.1 {
         for column in 0..bounds.0 {
             let point = pixel_to_point(bounds, (column, row), upper_left, lower_right);
@@ -99,6 +103,22 @@ pub fn render(
     Ok(())
 }
 
+///A modification of the render function. In case of normal threads without a scope
+//(eg. a scoped threadpool) it is
+///necessary to use an Arc that it can be safely shared between threads.
+///Arc only provides an immutable reference, hence a Mutex is neccessray for mutual access.
+///The bounds in combination with the offset argument defines which part of the buffer will
+///be rendered. The `upper_left` and `lower_right`
+///arguments specify points on the complex plane corresponding to the upper-
+///left and lower-right corners of the bounds.
+
+/// # Arguments
+///
+/// * `pixels` - An Arc which holds a Mutex which holds the buffer.
+/// * `offset` - An offset which specify which part of buffer will be mutated.
+/// * `bounds` - Specifies which part will be rendered.
+/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
+/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
 pub fn render_fork_join(
     pixels: Arc<Mutex<Vec<u8>>>,
     offset: usize,
@@ -123,6 +143,23 @@ pub fn render_fork_join(
     Ok(())
 }
 
+///A modification of the render_fork_join function.
+///Since Mutex is slow this is a very unsafe buildaround. It is safe to use ONLY if each element
+///of the Vector will be written by only one thread! Otherwise a race condition can occur!
+///In addition there is no guarantee, that the pointer outlives the function!
+///The bounds in combination with the offset argument defines which part of the buffer will
+///be rendered. The `upper_left` and `lower_right`
+///arguments specify points on the complex plane corresponding to the upper-
+///left and lower-right corners of the bounds.
+
+/// # Arguments
+///
+/// * `pixels` - An Arc which holds a Wrapper around an UnsafeCell which holds an Raw Pointer
+///to the vector.
+/// * `offset` - An offset which specify which part of buffer will be mutated.
+/// * `bounds` - Specifies which part will be rendered.
+/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
+/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
 pub fn render_fork_join_unsafe(
     pixels: Arc<Wrapper<*mut u8>>,
     offset: usize,
@@ -131,6 +168,8 @@ pub fn render_fork_join_unsafe(
     lower_right: Complex<f64>,
 ) -> Result<(), CustomError> {
     unsafe {
+        //The get() function returns a *mut T pointer which needs to be dereferenced
+        //to get the Pointer.
         let ptr = *pixels.0.get();
 
         //Check for every pixel wether it is in the mandelbrot set or not.
@@ -138,13 +177,13 @@ pub fn render_fork_join_unsafe(
             for column in 0..bounds.0 {
                 let point = pixel_to_point(bounds, (column, row), upper_left, lower_right);
 
-                let c = match escape_mandel_time(point) {
+                let mandel_time = match escape_mandel_time(point) {
                     None => 0,
                     Some(count) => 255 - count as u8,
                 };
                 ptr::write(
                     ptr.offset(offset as isize + (row * bounds.0 + column) as isize),
-                    c,
+                    mandel_time,
                 );
             }
         }
@@ -154,6 +193,12 @@ pub fn render_fork_join_unsafe(
 
 /// Write the buffer `pixels`, whose dimensions are given by `bounds`, to the
 /// file named `filename`.
+
+/// # Arguments
+///
+/// * `filename` - The name of the image which will be created.
+/// * `pixels` - A filled buffer of pixels.
+/// * `bounds` - The dimensions of the image.
 pub fn write_image(
     filename: &str,
     pixels: &[u8],

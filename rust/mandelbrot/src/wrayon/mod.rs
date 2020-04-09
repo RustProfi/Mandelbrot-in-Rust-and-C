@@ -1,10 +1,19 @@
 extern crate rayon;
 use crate::customerror::CustomError;
 use crate::mandel::{pixel_to_point, render};
-use crate::time::{Clock, MyTimer};
+use crate::time::{Clock, MyTimestamp};
 use num::Complex;
 use rayon::prelude::*;
 
+///Measure in ms how long it takes to compute an image of the mandelbrot set in parallel
+///using the rayon crate.
+
+/// # Arguments
+///
+/// * `bounds` - The length and width of the image
+/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
+/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
+/// * `rows_per_band` - The number of rows per band.
 pub fn time_with_rayon(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
@@ -14,8 +23,8 @@ pub fn time_with_rayon(
 
     let rows_per_band = 5;
 
-    let mut start = MyTimer::new();
-    let mut end = MyTimer::new();
+    let mut start = MyTimestamp::new();
+    let mut end = MyTimestamp::new();
 
     start.gettime(Clock::ClockMonotonicRaw)?;
     pixels

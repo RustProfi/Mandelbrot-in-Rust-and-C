@@ -1,24 +1,32 @@
 extern crate scoped_threadpool;
 use crate::customerror::CustomError;
 use crate::mandel::{pixel_to_point, render};
-use crate::time::{Clock, MyTimer};
+use crate::time::{Clock, MyTimestamp};
 use num::Complex;
 use scoped_threadpool::Pool;
 
+///Measure in ms how long it takes to compute an image of the mandelbrot set in parallel
+///using the scoped_threadpool crate.
+
+/// # Arguments
+///
+/// * `bounds` - The length and width of the image
+/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
+/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
+/// * `rows_per_band` - The number of rows per band.
 pub fn time_with_scoped_threadpool(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
-    pool: usize,
+    rows_per_band: usize,
 ) -> Result<f64, CustomError> {
     let mut pixels = vec![0; bounds.0 * bounds.1];
-    let mut pool = Pool::new(pool as u32);
+    let mut pool = Pool::new(8);
 
-    let rows_per_band = 5;
     let bands: Vec<&mut [u8]> = pixels.chunks_mut(rows_per_band * bounds.0).collect();
 
-    let mut start = MyTimer::new();
-    let mut end = MyTimer::new();
+    let mut start = MyTimestamp::new();
+    let mut end = MyTimestamp::new();
 
     start.gettime(Clock::ClockMonotonicRaw)?;
 
