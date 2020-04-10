@@ -17,7 +17,7 @@ use wforkjoinunsafe::time_fork_join_unsafe;
 use wrayon::time_with_rayon;
 use wscopedthreadpool::time_with_scoped_threadpool;
 
-static BOUNDS: (usize, usize) = (3000, 3000);
+static BOUNDS: (usize, usize) = (5000, 5000);
 static UPPER_LEFT: Complex<f64> = Complex { re: -1.6, im: 1.2 };
 static LOWER_RIGHT: Complex<f64> = Complex { re: 0.6, im: -1.2 };
 

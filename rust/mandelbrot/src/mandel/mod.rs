@@ -11,7 +11,7 @@ use std::ptr;
 use std::sync::Arc;
 use std::sync::Mutex;
 
-/// Try to determine if `c` is in the Mandelbrot set, using at most 255
+/// Try to determine if `c` is in the Mandelbrot set, using at most 256
 /// iterations to decide due to the color spectrum of the Png Writer. For
 /// a more precise estimation this value must be increased.
 ///
@@ -20,15 +20,21 @@ use std::sync::Mutex;
 /// origin. If `c` seems to be a member (more precisely, if we reached the
 /// iteration limit without being able to prove that `c` is not a member),
 /// return `None`.
-fn escape_mandel_time(c: Complex<f64>) -> Option<u32> {
+fn escape_mandel_iterations(c: Complex<f64>) -> Option<u32> {
     let mut z = Complex { re: 0.0, im: 0.0 };
-    for i in 0..255 {
+    for i in 0..256 {
         z = z * z + c;
         if z.norm_sqr() > 4.0 {
             return Some(i);
         }
     }
     None
+}
+
+#[test]
+fn test_escape_mandel_iterations() {
+    let x = Complex { re: -0.11456, im: 0.89808 };
+    assert_eq!(escape_mandel_iterations(x).unwrap(), 66);
 }
 
 /// Given the row and column of a pixel in the output image, return the
@@ -94,7 +100,7 @@ pub fn render(
     for row in 0..bounds.1 {
         for column in 0..bounds.0 {
             let point = pixel_to_point(bounds, (column, row), upper_left, lower_right);
-            pixels[row * bounds.0 + column] = match escape_mandel_time(point) {
+            pixels[row * bounds.0 + column] = match escape_mandel_iterations(point) {
                 None => 0,
                 Some(count) => 255 - count as u8,
             };
@@ -134,7 +140,7 @@ pub fn render_fork_join(
         for column in 0..bounds.0 {
             let point = pixel_to_point(bounds, (column, row), upper_left, lower_right);
             pixels.lock().unwrap()[offset + (row * bounds.0 + column)] =
-                match escape_mandel_time(point) {
+                match escape_mandel_iterations(point) {
                     None => 0,
                     Some(count) => 255 - count as u8,
                 };
@@ -177,7 +183,7 @@ pub fn render_fork_join_unsafe(
             for column in 0..bounds.0 {
                 let point = pixel_to_point(bounds, (column, row), upper_left, lower_right);
 
-                let mandel_time = match escape_mandel_time(point) {
+                let mandel_time = match escape_mandel_iterations(point) {
                     None => 0,
                     Some(count) => 255 - count as u8,
                 };
