@@ -21,11 +21,11 @@ pub fn time_fork_join(
     lower_right: Complex<f64>,
     number_of_threads: usize,
 ) -> Result<f64, CustomError> {
-    let arr_size = bounds.0 * bounds.1;
-    let pixels: Arc<Mutex<Vec<u8>>> = Arc::new(Mutex::new(vec![0; arr_size]));
+    let arr_len = bounds.0 * bounds.1;
+    let pixels: Arc<Mutex<Vec<u8>>> = Arc::new(Mutex::new(vec![0; arr_len]));
     //Round the count upward to make sure that the bands cover the entire image.
     let rows_per_band = bounds.1 / number_of_threads + 1;
-    let chunk_size = rows_per_band * bounds.0;
+    let chunk_len = rows_per_band * bounds.0;
     let mut threads = vec![];
 
     let mut start = MyTimestamp::new();
@@ -33,15 +33,16 @@ pub fn time_fork_join(
 
     start.gettime(Clock::ClockMonotonicRaw)?;
     //Iterate over arr_size in steps to create selfmade chunks.
-    for (i, offset) in (0..arr_size).step_by(chunk_size).enumerate() {
+    for (i, offset) in (0..arr_len).step_by(chunk_len).enumerate() {
         let pixels_ref = pixels.clone();
-        let chunk_length = if arr_size - offset > chunk_size {
-            chunk_size
+        //The last chunk can be smaller than the other chunks
+        let check_chunk_len = if arr_len - offset > chunk_len {
+            chunk_len
         } else {
-            arr_size - offset
+            arr_len - offset
         };
         let top = rows_per_band * i;
-        let height = chunk_length / bounds.0;
+        let height = check_chunk_len / bounds.0;
         let band_bounds = (bounds.0, height);
         let band_upper_left = pixel_to_point(bounds, (0, top), upper_left, lower_right);
         let band_lower_right =
