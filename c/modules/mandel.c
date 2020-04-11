@@ -3,13 +3,15 @@
 #include <complex.h>
 #include <png.h>
 
+//Prototypes
 int escape_mandel_iterations(double complex c);
 double complex_norm_square(double complex z);
 double complex pixel_to_point(unsigned int width, unsigned int height,
-                              unsigned int p_colum, unsigned int p_row, double complex upper_leftgit,
+                              unsigned int p_colum, unsigned int p_row, double complex upper_left,
                               double complex lower_right);
-void render(unsigned char * pixels, unsigned int width, unsigned int height,
+void render(unsigned char *pixels, unsigned int width, unsigned int height,
             double complex upper_left, double complex lower_right);
+int write_image(char *filename, unsigned char *pixels, unsigned int width, unsigned int height);
 
 int escape_mandel_iterations(double complex c) {
         double complex z = 0.0 + 0.0 * I;
@@ -37,7 +39,7 @@ double complex pixel_to_point(unsigned int width, unsigned int height,
         return re + im * I;
 }
 
-void render(unsigned char * pixels, unsigned int width, unsigned int height,
+void render(unsigned char *pixels, unsigned int width, unsigned int height,
             double complex upper_left, double complex lower_right) {
         //Ich kann hier nicht überprüfen, ob das array groß genug ist
         //Ich muss hoffen xD
@@ -51,12 +53,13 @@ void render(unsigned char * pixels, unsigned int width, unsigned int height,
 
 //http://www.labbookpages.co.uk/software/imgProc/files/libPNG/makePNG.c
 //http://www.labbookpages.co.uk/software/imgProc/libPNG.html
+//http://www.libpng.org/pub/png/libpng-1.4.0-manual.pdf
 //Das normale example.c sieht ein 2 Dimensionales Array vor, was meiner Meinung
 //nach alles verkompliziert.
 
-int write_image(char * filename, unsigned char * pixels, unsigned int width, unsigned int height) {
+int write_image(char *filename, unsigned char *pixels, unsigned int width, unsigned int height) {
         int code = 0;
-        FILE * fp = NULL;
+        FILE *fp = NULL;
         png_structp png_ptr = NULL;
         png_infop info_ptr = NULL;
         png_bytep row = NULL;
@@ -127,10 +130,11 @@ finalise:
         if (info_ptr != NULL) png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
         if (png_ptr != NULL) png_destroy_write_struct( &png_ptr, (png_infopp) NULL);
         if (row != NULL) free(row);
-
+        create header
         return code;
 }
 
+//compile with gcc -o mandel mandel.c -lm -lpng
 int main() {
         //Test escape_mandel_time
         double complex z1 = -0.11456 + 0.89808 * I;
