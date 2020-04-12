@@ -36,8 +36,12 @@ pub fn time_fork_join_unsafe(
     let len = v.len();
     let cap = v.capacity();
     let pixels = Arc::new(Wrapper(UnsafeCell::new(p)));
-    //Round the count upward to make sure that the bands cover the entire image.
-    let rows_per_band = bounds.1 / number_of_threads + 1;
+    //if rows_per_band doesn't fit perfectly in pixels_len without rest, it must be round upward to make sure that the bands cover the entire image.
+    let rows_per_band = if (bounds.0 * bounds.1) % (bounds.1 / number_of_threads) == 0 {
+        bounds.1 / number_of_threads
+    } else {
+        bounds.1 / number_of_threads + 1
+    };
     let chunk_len = rows_per_band * bounds.0;
     let mut threads = vec![];
 
@@ -80,11 +84,12 @@ pub fn time_fork_join_unsafe(
     }
     end.gettime(Clock::ClockMonotonicRaw)?;
 
+    /*
     unsafe {
         //Rebuild the vector from Raw pointer.
         let rebuilt = Vec::from_raw_parts(*pixels.0.get(), len, cap);
         crate::mandel::write_image("mandel.png", &rebuilt, bounds)?;
-    }
+    }*/
 
     //Call the destructor for pixels
     drop(v);

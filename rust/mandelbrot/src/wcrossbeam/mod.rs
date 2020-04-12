@@ -9,7 +9,7 @@ use num::Complex;
 
 /// # Arguments
 ///
-/// * `bounds` - The length and width of the image
+/// * `bounds` - The width and height of the image
 /// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
 /// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
 /// * `number_of_threads` - The number of threads and at the same time the number of chunks.
@@ -20,8 +20,12 @@ pub fn time_with_crossbeam(
     number_of_threads: usize,
 ) -> Result<f64, CustomError> {
     let mut pixels = vec![0; bounds.0 * bounds.1];
-    //Round the count upward to make sure that the bands cover the entire image.
-    let rows_per_band = bounds.1 / number_of_threads + 1;
+    //if rows_per_band doesn't fit perfectly in pixels_len without rest, it must be round upward to make sure that the bands cover the entire image.
+    let rows_per_band = if (bounds.0 * bounds.1) % (bounds.1 / number_of_threads) == 0 {
+        bounds.1 / number_of_threads
+    } else {
+        bounds.1 / number_of_threads + 1
+    };
     //Get non overlapping bands of the image.
     let bands: Vec<&mut [u8]> = pixels.chunks_mut(rows_per_band * bounds.0).collect();
 

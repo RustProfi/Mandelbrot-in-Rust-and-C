@@ -18,10 +18,9 @@ pub fn time_with_rayon(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
+    rows_per_band: usize
 ) -> Result<f64, CustomError> {
     let mut pixels = vec![0; bounds.0 * bounds.1];
-
-    let rows_per_band = 5;
 
     let mut start = MyTimestamp::new();
     let mut end = MyTimestamp::new();

@@ -33,7 +33,10 @@ fn escape_mandel_iterations(c: Complex<f64>) -> Option<u32> {
 
 #[test]
 fn test_escape_mandel_iterations() {
-    let x = Complex { re: -0.11456, im: 0.89808 };
+    let x = Complex {
+        re: -0.11456,
+        im: 0.89808,
+    };
     assert_eq!(escape_mandel_iterations(x).unwrap(), 66);
 }
 

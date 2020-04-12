@@ -14,11 +14,11 @@ double time_fork_join(unsigned int width, unsigned int height, double complex up
         render_args* args[number_of_threads];
 
         arr_len = width * height;
-        rows_per_band = height / number_of_threads + 1;
+        //if rows_per_band doesn't fit perfectly in arr_len without rest, it must be round upward to make sure that the bands cover the entire image.
+        rows_per_band = arr_len % (height / number_of_threads) == 0 ? height / number_of_threads : height / number_of_threads + 1;
         chunk_len = rows_per_band * width;
 
-        pixels = (unsigned char*)malloc(width * height * sizeof(unsigned char));
-
+        pixels = (unsigned char*)malloc(arr_len * sizeof(unsigned char));
         if(!pixels) {
                 perror("malloc failed");
                 exit(EXIT_FAILURE);
@@ -45,7 +45,7 @@ double time_fork_join(unsigned int width, unsigned int height, double complex up
                 double complex band_upper_left = pixel_to_point(width, height, 0, top, upper_left, lower_right);
                 double complex band_lower_right = pixel_to_point(width, height, width, top + band_height, upper_left, lower_right);
 
-                args[i]->pixels = &pixels[offset];
+                args[i]->chunk = &pixels[offset];
                 args[i]->width = width;
                 args[i]->height = band_height;
                 args[i]->upper_left = band_upper_left;
@@ -65,13 +65,13 @@ double time_fork_join(unsigned int width, unsigned int height, double complex up
                 pthread_join(thread_id[i], NULL);
         }
 
-
         if(clock_gettime(CLOCK_MONOTONIC_RAW, &end) == -1) {
                 perror("clock gettime failed");
                 exit(EXIT_FAILURE);
         }
 
         //write_image
+
         int r = write_image("mandel.png", pixels, width, height);
         if(r != 0) {
                 perror("write image failed");
@@ -84,5 +84,5 @@ double time_fork_join(unsigned int width, unsigned int height, double complex up
         for(i = 0; i < number_of_threads; i++) {
                 free(args[i]);
         }
-        return -1.0;// compute_time_milis(start, end);
+        return compute_time_milis(start, end);
 }

@@ -41,6 +41,7 @@ double complex pixel_to_point(unsigned int width, unsigned int height,
         return re + im * I;
 }
 
+
 void *render(void *arguments) {
         //Ich kann hier nicht überprüfen, ob das array groß genug ist
         //Ich muss hoffen xD
@@ -49,7 +50,7 @@ void *render(void *arguments) {
                 for (int column = 0; column < args->width; column++) {
                         double complex point = pixel_to_point(args->width, args->height, column, row, args->upper_left, args->lower_right);
                         unsigned int iters = escape_mandel_iterations(point);
-                        args->pixels[row * args->width + column] = iters == 0 ? 0 : 255 - iters;
+                        args->chunk[row * args->width + column] = iters == 0 ? 0 : 255 - iters;
                 }
         }
 }

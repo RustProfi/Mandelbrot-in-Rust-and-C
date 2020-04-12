@@ -92,7 +92,7 @@ fn main() {
     }
 
     if args[1].eq("rayon") || args[1].eq("ra") || args[1].eq("all") {
-        match time_with_rayon(BOUNDS, UPPER_LEFT, LOWER_RIGHT) {
+        match time_with_rayon(BOUNDS, UPPER_LEFT, LOWER_RIGHT, 5) {
             Ok(time) => println!("rayon compution time: {}ms", time),
             Err(e) => {
                 println!("{}", e);
