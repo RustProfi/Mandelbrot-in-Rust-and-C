@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <complex.h>
 #include <time.h>
@@ -13,6 +14,10 @@ static double complex LOWER_RIGHT = 0.6 - 1.2 * I;
 //run with
 //gcc -o mandel main.c modules/forkjoin.c modules/mandel.c -lm -lpng -pthread
 int main() {
-  double res = time_fork_join(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 8);
-  printf("%f\n", res);
+        double res = time_fork_join(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 8);
+        if(res == -1.0) {
+                perror("time fork join failed");
+                exit(EXIT_FAILURE);
+        }
+        printf("%f\n", res);
 }

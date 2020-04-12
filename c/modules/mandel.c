@@ -145,13 +145,13 @@ finalise:
 }
 
 double compute_time_milis(struct timespec start, struct timespec end) {
-  return (end.tv_sec - start.tv_sec) * 1000.0
-    + (end.tv_nsec - start.tv_nsec) / 1000000.0;
+        return (end.tv_sec - start.tv_sec) * 1000.0
+               + (end.tv_nsec - start.tv_nsec) / 1000000.0;
 }
 
 //compile with gcc -o mandel mandel.c -lm -lpng
 /*
-int main() {
+   int main() {
         //Test escape_mandel_iterations
         double complex z1 = -0.11456 + 0.89808 * I;
         printf("z1: %f %+f\n", creal(z1), cimag(z1));
@@ -163,4 +163,4 @@ int main() {
         double complex xd = pixel_to_point(100, 100, 25, 75, xd1, xd2);
         printf("z1: %f %+f\n", creal(xd), cimag(xd)); // -0.5 -0.5
 
-}*/
+   }*/

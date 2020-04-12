@@ -5,8 +5,7 @@
 #include <pthread.h>
 #include "mandel.h"
 
-//0 in case of error
-//todo noch alle mallocs immer freen Xd
+//-1.0 in case of error
 double time_fork_join(unsigned int width, unsigned int height, double complex upper_left, double complex lower_right, unsigned int number_of_threads) {
         unsigned char *pixels;
         int i, offset, rows_per_band, chunk_len, arr_len;
@@ -21,7 +20,6 @@ double time_fork_join(unsigned int width, unsigned int height, double complex up
         pixels = (unsigned char*)malloc(width * height * sizeof(unsigned char));
 
         if(!pixels) {
-                //free(thread_id);
                 perror("malloc failed");
                 exit(EXIT_FAILURE);
         }
@@ -29,8 +27,8 @@ double time_fork_join(unsigned int width, unsigned int height, double complex up
         for(i = 0; i < number_of_threads; ++i) {
                 args[i] = (render_args*)malloc(sizeof(render_args));
                 if(!args[i]) {
-                  perror("malloc failed");
-                  exit(EXIT_FAILURE);
+                        perror("malloc failed");
+                        exit(EXIT_FAILURE);
                 }
         }
 
@@ -43,7 +41,6 @@ double time_fork_join(unsigned int width, unsigned int height, double complex up
         for(offset = 0; offset < arr_len; offset += chunk_len) {
                 unsigned int check_chunk_len = arr_len - offset > chunk_len ? chunk_len : arr_len - offset;
                 unsigned int top = rows_per_band * i;
-                //unsigned int band_width = width;
                 unsigned int band_height = check_chunk_len / width;
                 double complex band_upper_left = pixel_to_point(width, height, 0, top, upper_left, lower_right);
                 double complex band_lower_right = pixel_to_point(width, height, width, top + band_height, upper_left, lower_right);
@@ -51,7 +48,6 @@ double time_fork_join(unsigned int width, unsigned int height, double complex up
                 args[i]->pixels = &pixels[offset];
                 args[i]->width = width;
                 args[i]->height = band_height;
-                //printf("height %d\n", args[i]->height);
                 args[i]->upper_left = band_upper_left;
                 args[i]->lower_right = band_lower_right;
 
@@ -60,7 +56,6 @@ double time_fork_join(unsigned int width, unsigned int height, double complex up
                 if(res != 0) {
                         perror("create thread failed");
                         free(pixels);
-                        //free(thread_id);
                         exit(EXIT_FAILURE);
                 }
                 i++;
@@ -87,8 +82,7 @@ double time_fork_join(unsigned int width, unsigned int height, double complex up
 
         free(pixels);
         for(i = 0; i < number_of_threads; i++) {
-          free(args[i]);
+                free(args[i]);
         }
-        return compute_time_milis(start, end);
-
+        return -1.0;// compute_time_milis(start, end);
 }
