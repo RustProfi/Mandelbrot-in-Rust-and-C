@@ -60,7 +60,7 @@ void *render(void *arguments) {
 //Das normale example.c sieht ein 2 Dimensionales Array vor, was meiner Meinung
 //nach alles verkompliziert.
 
-//Ich glaub 0 ist alles gut XD
+//in case of return 0 everything is ok
 int write_image(char *filename, unsigned char *pixels, unsigned int width, unsigned int height) {
         int code = 0;
         FILE *fp = NULL;
@@ -138,7 +138,7 @@ int write_image(char *filename, unsigned char *pixels, unsigned int width, unsig
 finalise:
         if (fp != NULL) fclose(fp);
         if (info_ptr != NULL) png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
-        if (png_ptr != NULL) png_destroy_write_struct( &png_ptr, (png_infopp) NULL);
+        if (png_ptr != NULL) png_destroy_write_struct( &png_ptr, &info_ptr);
         if (row != NULL) free(row);
 
         return code;

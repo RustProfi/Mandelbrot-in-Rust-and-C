@@ -86,7 +86,9 @@ double time_fork_join(unsigned int width, unsigned int height, double complex up
         }
 
         free(pixels);
-        //free(thread_id);
+        for(i = 0; i < number_of_threads; i++) {
+          free(args[i]);
+        }
         return compute_time_milis(start, end);
 
 }
