@@ -68,7 +68,7 @@ int write_image(char *filename, unsigned char *pixels, unsigned int width, unsig
         fp = fopen(filename, "wb");
         if (fp == NULL) {
                 fprintf(stderr, "Could not open file %s for writing\n", filename);
-                code = 1;
+                code = -1;
                 goto finalise;
         }
 
@@ -76,7 +76,7 @@ int write_image(char *filename, unsigned char *pixels, unsigned int width, unsig
         png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
         if (png_ptr == NULL) {
                 fprintf(stderr, "Could not allocate write struct\n");
-                code = 1;
+                code = -1;
                 goto finalise;
         }
 
@@ -84,14 +84,14 @@ int write_image(char *filename, unsigned char *pixels, unsigned int width, unsig
         info_ptr = png_create_info_struct(png_ptr);
         if (info_ptr == NULL) {
                 fprintf(stderr, "Could not allocate info struct\n");
-                code = 1;
+                code = -1;
                 goto finalise;
         }
 
         // Setup Exception handling
         if (setjmp(png_jmpbuf(png_ptr))) {
                 fprintf(stderr, "Error during png creation\n");
-                code = 1;
+                code = -1;
                 goto finalise;
         }
 
@@ -116,12 +116,8 @@ int write_image(char *filename, unsigned char *pixels, unsigned int width, unsig
         row = (png_bytep) malloc(1 * width * sizeof(png_byte));
 
         // Write image data
-        int x, y;
-
-        for (y = 0; y < height; y++) {
-                for (x = 0; x < width; x++) {
-                        //setRGB(&(row[x*1]), pixels[y*width + x]);
-
+        for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
                         row[x] = pixels[y * width + x];
                 }
 

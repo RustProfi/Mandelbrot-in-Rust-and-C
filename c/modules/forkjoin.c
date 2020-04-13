@@ -9,6 +9,7 @@
 double time_fork_join(unsigned int width, unsigned int height, double complex upper_left, double complex lower_right, unsigned int number_of_threads) {
         unsigned char *pixels;
         int i, offset, rows_per_band, chunk_len, arr_len;
+        double retval;
         struct timespec start, end;
         pthread_t thread_id[number_of_threads];
         render_args* args[number_of_threads];
@@ -20,21 +21,24 @@ double time_fork_join(unsigned int width, unsigned int height, double complex up
 
         pixels = (unsigned char*)malloc(arr_len * sizeof(unsigned char));
         if(!pixels) {
-                perror("malloc failed");
-                exit(EXIT_FAILURE);
+                fprintf(stderr, "malloc failed\n");
+                retval = -1;
+                goto freepixels;
         }
 
         for(i = 0; i < number_of_threads; ++i) {
                 args[i] = (render_args*)malloc(sizeof(render_args));
                 if(!args[i]) {
-                        perror("malloc failed");
-                        exit(EXIT_FAILURE);
+                        fprintf(stderr, "malloc failed\n");
+                        retval = -1;
+                        goto freeall;
                 }
         }
 
         if(clock_gettime(CLOCK_MONOTONIC_RAW, &start) == -1) {
-                perror("clock gettime");
-                exit(EXIT_FAILURE);
+                fprintf(stderr, "clock gettime failed\n");
+                retval = -1;
+                goto freeall;
         }
 
         i = 0;
@@ -51,38 +55,42 @@ double time_fork_join(unsigned int width, unsigned int height, double complex up
                 args[i]->upper_left = band_upper_left;
                 args[i]->lower_right = band_lower_right;
 
-                int res = pthread_create(&thread_id[i], NULL, render, args[i]);
-
-                if(res != 0) {
-                        perror("create thread failed");
-                        free(pixels);
-                        exit(EXIT_FAILURE);
+                if(pthread_create(&thread_id[i], NULL, render, args[i]) != 0) {
+                        fprintf(stderr, "create thread failed\n");
+                        retval = -1;
+                        goto freeall;
                 }
                 i++;
         }
 
         for(i = 0; i < number_of_threads; i++) {
-                pthread_join(thread_id[i], NULL);
+                if(pthread_join(thread_id[i], NULL) != 0) {
+                  fprintf(stderr, "join thread failed\n");
+                  retval = -1;
+                  goto freeall;
+                };
         }
 
         if(clock_gettime(CLOCK_MONOTONIC_RAW, &end) == -1) {
-                perror("clock gettime failed");
-                exit(EXIT_FAILURE);
+                fprintf(stderr, "clock gettime failed\n");
+                retval = -1;
+                goto freeall;
         }
 
-        //write_image
-
-        int r = write_image("mandel.png", pixels, width, height);
-        if(r != 0) {
-                perror("write image failed");
-                free(pixels);
-                //free(thread_id);
-                exit(EXIT_FAILURE);
+        if(write_image("mandel.png", pixels, width, height) == -1) {
+                fprintf(stderr, "write image failed\n");
+                retval = -1;
+                goto freeall;
         }
 
-        free(pixels);
+        retval = compute_time_milis(start, end);
+
+freeall:
         for(i = 0; i < number_of_threads; i++) {
-                free(args[i]);
+                if(args[i] != NULL)
+                        free(args[i]);
         }
-        return compute_time_milis(start, end);
+freepixels:
+        free(pixels);
+        return retval;
 }
