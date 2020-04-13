@@ -4,20 +4,23 @@
 #include <time.h>
 #include <pthread.h>
 #include "mandel.h"
+#include "../C-Thread-Pool/thpool.h"
 
 //-1.0 in case of error
-double time_fork_join(int width, int height, double complex upper_left, double complex lower_right, int number_of_threads) {
+double time_threadpool(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band) {
         char *pixels;
-        int i, offset, rows_per_band, chunk_len, arr_len;
+        int i, offset, chunk_len, arr_len, num_of_jobs;
         double retval;
         struct timespec start, end;
-        pthread_t thread_id[number_of_threads];
-        render_args* args[number_of_threads];
+        threadpool thpool;
+        //returns void
+        thpool = thpool_init(8);
 
         arr_len = width * height;
-        //if rows_per_band doesn't fit perfectly in arr_len without rest, it must be round upward to make sure that the bands cover the entire image.
-        rows_per_band = arr_len % (height / number_of_threads) == 0 ? height / number_of_threads : height / number_of_threads + 1;
+        //if rows_per_band doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
+        num_of_jobs = height % rows_per_band == 0 ? height / rows_per_band : height / rows_per_band + 1;
         chunk_len = rows_per_band * width;
+        render_args* args[num_of_jobs];
 
         pixels = (char*)malloc(arr_len * sizeof(char));
         if(!pixels) {
@@ -26,7 +29,7 @@ double time_fork_join(int width, int height, double complex upper_left, double c
                 goto freepixels;
         }
 
-        for(i = 0; i < number_of_threads; ++i) {
+        for(i = 0; i < num_of_jobs; ++i) {
                 args[i] = (render_args*)malloc(sizeof(render_args));
                 if(!args[i]) {
                         fprintf(stderr, "malloc failed\n");
@@ -56,21 +59,16 @@ double time_fork_join(int width, int height, double complex upper_left, double c
                 args[i]->upper_left = band_upper_left;
                 args[i]->lower_right = band_lower_right;
 
-                if(pthread_create(&thread_id[i], NULL, render, args[i]) != 0) {
-                        fprintf(stderr, "create thread failed\n");
+                if(thpool_add_work(thpool, (void*)render, args[i]) == -1) {
+                        fprintf(stderr, "submit job to the threadpool failed\n");
                         retval = -1;
                         goto freeall;
                 }
                 i++;
         }
 
-        for(i = 0; i < number_of_threads; i++) {
-                if(pthread_join(thread_id[i], NULL) != 0) {
-                        fprintf(stderr, "join thread failed\n");
-                        retval = -1;
-                        goto freeall;
-                };
-        }
+        thpool_wait(thpool);
+
 
         if(clock_gettime(CLOCK_MONOTONIC_RAW, &end) == -1) {
                 fprintf(stderr, "clock gettime failed\n");
@@ -87,7 +85,8 @@ double time_fork_join(int width, int height, double complex upper_left, double c
         retval = compute_time_milis(start, end);
 
 freeall:
-        for(i = 0; i < number_of_threads; i++) {
+        thpool_destroy(thpool);
+        for(i = 0; i < num_of_jobs; i++) {
                 if(args[i] != NULL)
                         free(args[i]);
         }

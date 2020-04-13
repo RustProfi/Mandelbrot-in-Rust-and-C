@@ -2,22 +2,42 @@
 #include <stdio.h>
 #include <complex.h>
 #include <time.h>
+#include <string.h>
 #include "modules/mandel.h"
 #include "modules/forkjoin.h"
+#include "modules/threadpool.h"
 
-static  int WIDTH = 5000;
-static  int HEIGHT = 5000;
+static int WIDTH = 5000;
+static int HEIGHT = 5000;
 static double complex UPPER_LEFT = -1.6 + 1.2 * I;
 static double complex LOWER_RIGHT = 0.6 - 1.2 * I;
 
 
 //run with
-//gcc -o mandel main.c modules/forkjoin.c modules/mandel.c -lm -lpng -pthread -Ofast
-int main() {
-        double res = time_fork_join(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 100);
-        if(res == -1.0) {
-                fprintf(stderr, "time fork join failed\n");
+//gcc -o mandel main.c modules/forkjoin.c modules/mandel.c modules/threadpool.c C-Thread-Pool/thpool.c -lm -lpng -pthread -Ofast
+int main(int argc, char *argv[]) {
+
+        if(argc == 1 || argc > 2) {
+                fprintf(stderr, "Usage: ./mandel <arg>\n");
+                fprintf(stderr, "Methods: forkjoin|fj, threadpool|tp, all\n");
                 exit(EXIT_FAILURE);
         }
-        printf("%f\n", res);
+
+        if(!strcmp(argv[1], "forkjoin") || !strcmp(argv[1], "fj") || !strcmp(argv[1], "all")) {
+                double res = time_fork_join(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 12);
+                if(res == -1.0) {
+                        fprintf(stderr, "time fork join failed\n");
+                        exit(EXIT_FAILURE);
+                }
+                printf("Forkjoin: %fms\n", res);
+        }
+
+        if(!strcmp(argv[1], "threadpool") || !strcmp(argv[1], "tp") || !strcmp(argv[1], "all")) {
+                double res = time_threadpool(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 5);
+                if(res == -1.0) {
+                        fprintf(stderr, "threadpool failed\n");
+                        exit(EXIT_FAILURE);
+                }
+                printf("Threadpool: %fms\n", res);
+        }
 }
