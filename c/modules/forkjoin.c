@@ -6,8 +6,8 @@
 #include "mandel.h"
 
 //-1.0 in case of error
-double time_fork_join(unsigned int width, unsigned int height, double complex upper_left, double complex lower_right, unsigned int number_of_threads) {
-        unsigned char *pixels;
+double time_fork_join(int width, int height, double complex upper_left, double complex lower_right, int number_of_threads) {
+        char *pixels;
         int i, offset, rows_per_band, chunk_len, arr_len;
         double retval;
         struct timespec start, end;
@@ -19,7 +19,7 @@ double time_fork_join(unsigned int width, unsigned int height, double complex up
         rows_per_band = arr_len % (height / number_of_threads) == 0 ? height / number_of_threads : height / number_of_threads + 1;
         chunk_len = rows_per_band * width;
 
-        pixels = (unsigned char*)malloc(arr_len * sizeof(unsigned char));
+        pixels = (char*)malloc(arr_len * sizeof(char));
         if(!pixels) {
                 fprintf(stderr, "malloc failed\n");
                 retval = -1;
@@ -43,9 +43,9 @@ double time_fork_join(unsigned int width, unsigned int height, double complex up
 
         i = 0;
         for(offset = 0; offset < arr_len; offset += chunk_len) {
-                unsigned int check_chunk_len = arr_len - offset > chunk_len ? chunk_len : arr_len - offset;
-                unsigned int top = rows_per_band * i;
-                unsigned int band_height = check_chunk_len / width;
+                int check_chunk_len = arr_len - offset > chunk_len ? chunk_len : arr_len - offset;
+                int top = rows_per_band * i;
+                int band_height = check_chunk_len / width;
                 double complex band_upper_left = pixel_to_point(width, height, 0, top, upper_left, lower_right);
                 double complex band_lower_right = pixel_to_point(width, height, width, top + band_height, upper_left, lower_right);
 
@@ -65,9 +65,9 @@ double time_fork_join(unsigned int width, unsigned int height, double complex up
 
         for(i = 0; i < number_of_threads; i++) {
                 if(pthread_join(thread_id[i], NULL) != 0) {
-                  fprintf(stderr, "join thread failed\n");
-                  retval = -1;
-                  goto freeall;
+                        fprintf(stderr, "join thread failed\n");
+                        retval = -1;
+                        goto freeall;
                 };
         }
 

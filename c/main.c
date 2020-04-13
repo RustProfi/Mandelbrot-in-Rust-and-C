@@ -5,8 +5,8 @@
 #include "modules/mandel.h"
 #include "modules/forkjoin.h"
 
-static unsigned int WIDTH = 5000;
-static unsigned int HEIGHT = 5000;
+static  int WIDTH = 5000;
+static  int HEIGHT = 5000;
 static double complex UPPER_LEFT = -1.6 + 1.2 * I;
 static double complex LOWER_RIGHT = 0.6 - 1.2 * I;
 

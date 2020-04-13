@@ -6,15 +6,15 @@
 #include "mandel.h"
 
 //Prototypes
-unsigned int escape_mandel_iterations(double complex c);
-double complex pixel_to_point(unsigned int width, unsigned int height,
-                              unsigned int p_colum, unsigned int p_row, double complex upper_left,
-                              double complex lower_right);
+int escape_mandel_iterations(double complex c);
+double complex pixel_to_point( int width, int height,
+                               int p_colum, int p_row, double complex upper_left,
+                               double complex lower_right);
 void *render(void *args);
-int write_image(char *filename, unsigned char *pixels, unsigned int width, unsigned int height);
+int write_image(char *filename, char *pixels, int width, int height);
 double compute_time_milis(struct timespec start, struct timespec end);
 
-unsigned int escape_mandel_iterations(double complex c) {
+int escape_mandel_iterations(double complex c) {
         double complex z = 0.0 + 0.0 * I;
         for (int i = 0; i < 256; i++) {
                 z = z * z + c;
@@ -25,9 +25,9 @@ unsigned int escape_mandel_iterations(double complex c) {
         return 0;
 }
 
-double complex pixel_to_point(unsigned int width, unsigned int height,
-                              unsigned int p_colum, unsigned int p_row, double complex upper_left,
-                              double complex lower_right) {
+double complex pixel_to_point(int width, int height,
+                               int p_colum, int p_row, double complex upper_left,
+                               double complex lower_right) {
         double c_width = creal(lower_right) - creal(upper_left);
         double c_height = cimag(upper_left) - cimag(lower_right);
 
@@ -44,7 +44,7 @@ void *render(void *arguments) {
         for (int row = 0; row < args->height; row++) {
                 for (int column = 0; column < args->width; column++) {
                         double complex point = pixel_to_point(args->width, args->height, column, row, args->upper_left, args->lower_right);
-                        unsigned int iters = escape_mandel_iterations(point);
+                        int iters = escape_mandel_iterations(point);
                         args->chunk[row * args->width + column] = iters == 0 ? 0 : 255 - iters;
                 }
         }
@@ -57,7 +57,7 @@ void *render(void *arguments) {
 //nach alles verkompliziert.
 
 //in case of return 0 everything is ok
-int write_image(char *filename, unsigned char *pixels, unsigned int width, unsigned int height) {
+int write_image(char *filename, char *pixels, int width, int height) {
         int code = 0;
         FILE *fp = NULL;
         png_structp png_ptr = NULL;
@@ -113,7 +113,7 @@ int write_image(char *filename, unsigned char *pixels, unsigned int width, unsig
         png_write_info(png_ptr, info_ptr);
 
         // Allocate memory for one row (1 bytes per pixel - Grayscale)
-        row = (png_bytep) malloc(1 * width * sizeof(png_byte));
+        row = (png_bytep)malloc(1 * width * sizeof(png_byte));
 
         // Write image data
         for (int y = 0; y < height; y++) {
