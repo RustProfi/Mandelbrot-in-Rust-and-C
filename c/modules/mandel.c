@@ -7,7 +7,6 @@
 
 //Prototypes
 unsigned int escape_mandel_iterations(double complex c);
-double complex_norm_square(double complex z);
 double complex pixel_to_point(unsigned int width, unsigned int height,
                               unsigned int p_colum, unsigned int p_row, double complex upper_left,
                               double complex lower_right);
@@ -19,15 +18,11 @@ unsigned int escape_mandel_iterations(double complex c) {
         double complex z = 0.0 + 0.0 * I;
         for (int i = 0; i < 256; i++) {
                 z = z * z + c;
-                if (complex_norm_square(z) > 4.0) {
+                if (cabs(z) > 4.0) {
                         return i;
                 }
         }
         return 0;
-}
-
-double complex_norm_square(double complex z) {
-        return creal(z) * creal(z) + cimag(z) * cimag(z);
 }
 
 double complex pixel_to_point(unsigned int width, unsigned int height,
