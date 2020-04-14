@@ -11,6 +11,7 @@ double complex pixel_to_point( int width, int height,
                                int p_colum, int p_row, double complex upper_left,
                                double complex lower_right);
 void *render(void *args);
+void render_openmp(char *chunk, int width, int height, double complex upper_left, double complex lower_right);
 int write_image(char *filename, char *pixels, int width, int height);
 double compute_time_milis(struct timespec start, struct timespec end);
 
@@ -46,6 +47,18 @@ void *render(void *arguments) {
                         double complex point = pixel_to_point(args->width, args->height, column, row, args->upper_left, args->lower_right);
                         int iters = escape_mandel_iterations(point);
                         args->chunk[row * args->width + column] = iters == 0 ? 0 : 255 - iters;
+                }
+        }
+}
+
+void render_openmp(char *chunk, int width, int height, double complex upper_left, double complex lower_right) {
+        //Ich kann hier nicht überprüfen, ob das array groß genug ist
+        //Ich muss hoffen xD
+        for (int row = 0; row < height; row++) {
+                for (int column = 0; column < width; column++) {
+                        double complex point = pixel_to_point(width, height, column, row, upper_left, lower_right);
+                        int iters = escape_mandel_iterations(point);
+                        chunk[row * width + column] = iters == 0 ? 0 : 255 - iters;
                 }
         }
 }

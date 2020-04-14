@@ -44,8 +44,8 @@ double time_threadpool(int width, int height, double complex upper_left, double 
                 goto freeall;
         }
 
-        i = 0;
-        for(offset = 0; offset < arr_len; offset += chunk_len) {
+        for(i = 0; i < num_of_jobs; i++) {
+                int offset = chunk_len * i;
                 //in case of last chunk is smaller than the previous ones.
                 int check_chunk_len = arr_len - offset > chunk_len ? chunk_len : arr_len - offset;
                 int top = rows_per_band * i;
@@ -64,7 +64,6 @@ double time_threadpool(int width, int height, double complex upper_left, double 
                         retval = -1;
                         goto freeall;
                 }
-                i++;
         }
 
         thpool_wait(thpool);

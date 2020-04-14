@@ -6,17 +6,17 @@
 #include "mandel.h"
 
 //-1.0 in case of error
-double time_fork_join(int width, int height, double complex upper_left, double complex lower_right, int number_of_threads) {
+double time_fork_join(int width, int height, double complex upper_left, double complex lower_right, int NTHREADS) {
         char *pixels;
         int i, offset, rows_per_band, chunk_len, arr_len;
         double retval;
         struct timespec start, end;
-        pthread_t thread_id[number_of_threads];
-        render_args* args[number_of_threads];
+        pthread_t thread_id[NTHREADS];
+        render_args* args[NTHREADS];
 
         arr_len = width * height;
         //if rows_per_band doesn't fit perfectly in arr_len without rest, it must be round upward to make sure that the bands cover the entire image.
-        rows_per_band = arr_len % (height / number_of_threads) == 0 ? height / number_of_threads : height / number_of_threads + 1;
+        rows_per_band = arr_len % (height / NTHREADS) == 0 ? height / NTHREADS : height / NTHREADS + 1;
         chunk_len = rows_per_band * width;
 
         pixels = (char*)malloc(arr_len * sizeof(char));
@@ -26,7 +26,7 @@ double time_fork_join(int width, int height, double complex upper_left, double c
                 goto freepixels;
         }
 
-        for(i = 0; i < number_of_threads; ++i) {
+        for(i = 0; i < NTHREADS; ++i) {
                 args[i] = (render_args*)malloc(sizeof(render_args));
                 if(!args[i]) {
                         fprintf(stderr, "malloc failed\n");
@@ -41,7 +41,7 @@ double time_fork_join(int width, int height, double complex upper_left, double c
                 goto freeall;
         }
 
-        for(i = 0; i < number_of_threads; i++) {
+        for(i = 0; i < NTHREADS; i++) {
                 int offset = chunk_len * i;
                 //in case of last chunk is smaller than the previous ones.
                 int check_chunk_len = arr_len - offset > chunk_len ? chunk_len : arr_len - offset;
@@ -63,7 +63,7 @@ double time_fork_join(int width, int height, double complex upper_left, double c
                 }
         }
 
-        for(i = 0; i < number_of_threads; i++) {
+        for(i = 0; i < NTHREADS; i++) {
                 if(pthread_join(thread_id[i], NULL) != 0) {
                         fprintf(stderr, "join thread failed\n");
                         retval = -1;
@@ -86,7 +86,7 @@ double time_fork_join(int width, int height, double complex upper_left, double c
         retval = compute_time_milis(start, end);
 
 freeall:
-        for(i = 0; i < number_of_threads; i++) {
+        for(i = 0; i < NTHREADS; i++) {
                 if(args[i] != NULL)
                         free(args[i]);
         }
