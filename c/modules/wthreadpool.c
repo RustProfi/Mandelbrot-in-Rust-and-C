@@ -7,14 +7,12 @@
 #include "../C-Thread-Pool/thpool.h"
 
 //-1.0 in case of error
-double time_threadpool(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band) {
+double time_threadpool(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band, int number_of_threads, int draw) {
         char *pixels;
         int i, offset, chunk_len, arr_len, num_of_jobs;
         double retval;
         struct timespec start, end;
         threadpool thpool;
-        //returns void
-        thpool = thpool_init(8);
 
         arr_len = width * height;
         //if rows_per_band doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
@@ -43,6 +41,9 @@ double time_threadpool(int width, int height, double complex upper_left, double 
                 retval = -1;
                 goto freeall;
         }
+
+        //returns void
+        thpool = thpool_init(number_of_threads);
 
         for(i = 0; i < num_of_jobs; i++) {
                 int offset = chunk_len * i;
@@ -75,10 +76,12 @@ double time_threadpool(int width, int height, double complex upper_left, double 
                 goto freeall;
         }
 
-        if(write_image("mandel.png", pixels, width, height) == -1) {
-                fprintf(stderr, "write image failed\n");
-                retval = -1;
-                goto freeall;
+        if(draw == 1) {
+                if(write_image("mandel.png", pixels, width, height) == -1) {
+                        fprintf(stderr, "write image failed\n");
+                        retval = -1;
+                        goto freeall;
+                }
         }
 
         retval = compute_time_milis(start, end);

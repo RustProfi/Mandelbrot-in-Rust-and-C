@@ -6,7 +6,7 @@
 //#include <omp.h>
 
 //-1.0 in case of error
-double time_openmp(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band, int NTHREADS) {
+double time_openmp(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band, int number_of_threads, int draw) {
         char *pixels;
         int i, offset, chunk_len, arr_len, num_of_jobs;
         double retval;
@@ -30,7 +30,7 @@ double time_openmp(int width, int height, double complex upper_left, double comp
                 goto freepixels;
         }
 
-        #pragma omp parallel for default(none) num_threads(NTHREADS) shared(pixels, num_of_jobs, chunk_len, arr_len, rows_per_band, width, height, upper_left, lower_right)
+        #pragma omp parallel for default(none) num_threads(number_of_threads) shared(pixels, num_of_jobs, chunk_len, arr_len, rows_per_band, width, height, upper_left, lower_right)
         for(i = 0; i < num_of_jobs; i++) {
                 int offset = chunk_len * i;
                 //in case of last chunk is smaller than the previous ones.
@@ -49,10 +49,12 @@ double time_openmp(int width, int height, double complex upper_left, double comp
                 goto freepixels;
         }
 
-        if(write_image("mandel.png", pixels, width, height) == -1) {
-                fprintf(stderr, "write image failed\n");
-                retval = -1;
-                goto freepixels;
+        if(draw == 1) {
+                if(write_image("mandel.png", pixels, width, height) == -1) {
+                        fprintf(stderr, "write image failed\n");
+                        retval = -1;
+                        goto freepixels;
+                }
         }
 
         retval = compute_time_milis(start, end);

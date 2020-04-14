@@ -10,8 +10,7 @@
 
 static int WIDTH = 5000;
 static int HEIGHT = 5000;
-static int NTHREADS = 50;
-static int NUMBER_OF_ROWS = 5;
+static int DRAW = 0;
 static double complex UPPER_LEFT = -1.6 + 1.2 * I;
 static double complex LOWER_RIGHT = 0.6 - 1.2 * I;
 
@@ -26,30 +25,83 @@ int main(int argc, char *argv[]) {
                 exit(EXIT_FAILURE);
         }
 
+        //Performance check for threads
+        //Runs 20x for each thread_count.
         if(!strcmp(argv[1], "threads") || !strcmp(argv[1], "th") || !strcmp(argv[1], "all")) {
-                double res = time_fork_join(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, NTHREADS);
-                if(res == -1.0) {
-                        fprintf(stderr, "time with threads failed\n");
+                FILE *fp;
+                fp = fopen("c_threads_performance.txt", "w");
+                if (fp == NULL) {
+                        fprintf(stderr, "Could not open file for writing\n");
                         exit(EXIT_FAILURE);
                 }
-                printf("Threads: %fms\n", res);
+
+                for(int thread_count = 4; thread_count <= 60; thread_count++) {
+                        double time = 0;
+                        for(int i = 0; i < 20; i++) {
+                                double res = time_threads(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, thread_count, DRAW);
+                                if(res == -1.0) {
+                                        fprintf(stderr, "time with threads failed\n");
+                                        exit(EXIT_FAILURE);
+                                }
+                                time += res;
+                        }
+                        time /= 20;
+                        fprintf(fp, "%d,%f\n", thread_count, time);
+                }
+                fclose(fp);
         }
 
+        //Performance check for threadpool
+        //Runs 20x for each rows_per_band.
+        //Threadpool always with 8 threads.
         if(!strcmp(argv[1], "threadpool") || !strcmp(argv[1], "tp") || !strcmp(argv[1], "all")) {
-                double res = time_threadpool(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, NUMBER_OF_ROWS);
-                if(res == -1.0) {
-                        fprintf(stderr, "time with threadpool failed\n");
+                FILE *fp;
+                fp = fopen("c_threadpool_performance.txt", "w");
+                if (fp == NULL) {
+                        fprintf(stderr, "Could not open file for writing\n");
                         exit(EXIT_FAILURE);
                 }
-                printf("Threadpool: %fms\n", res);
+
+                for(int rows_per_band = 1; rows_per_band <= 60; rows_per_band++) {
+                        double time = 0;
+                        for(int i = 0; i < 20; i++) {
+                                double res = time_threadpool(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, rows_per_band, 8, DRAW);
+                                if(res == -1.0) {
+                                        fprintf(stderr, "time with threadpool failed\n");
+                                        exit(EXIT_FAILURE);
+                                }
+                                time += res;
+                        }
+                        time /= 20;
+                        fprintf(fp, "%d,%f\n", rows_per_band, time);
+                }
+                fclose(fp);
+
         }
 
+        //Performance check for openmp
+        //Runs 20x for each thread_count.
         if(!strcmp(argv[1], "openmp") || !strcmp(argv[1], "op") || !strcmp(argv[1], "all")) {
-                double res = time_openmp(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, NUMBER_OF_ROWS, NTHREADS);
-                if(res == -1.0) {
-                        fprintf(stderr, "time with openmp failed\n");
+                FILE *fp;
+                fp = fopen("c_openmp_performance.txt", "w");
+                if (fp == NULL) {
+                        fprintf(stderr, "Could not open file for writing\n");
                         exit(EXIT_FAILURE);
                 }
-                printf("Openmp: %fms\n", res);
+
+                for(int thread_count = 4; thread_count <= 60; thread_count++) {
+                        double time = 0;
+                        for(int i = 0; i < 20; i++) {
+                                double res = time_openmp(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 5, thread_count, DRAW);
+                                if(res == -1.0) {
+                                        fprintf(stderr, "time with openmp failed\n");
+                                        exit(EXIT_FAILURE);
+                                }
+                                time += res;
+                        }
+                        time /= 20;
+                        fprintf(fp, "%d,%f\n", thread_count, time);
+                }
+                fclose(fp);
         }
 }
