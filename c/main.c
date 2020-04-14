@@ -4,8 +4,8 @@
 #include <time.h>
 #include <string.h>
 #include "modules/mandel.h"
-#include "modules/threads.h"
-#include "modules/threadpool.h"
+#include "modules/wthreads.h"
+#include "modules/wthreadpool.h"
 
 static int WIDTH = 5000;
 static int HEIGHT = 5000;
@@ -14,7 +14,7 @@ static double complex LOWER_RIGHT = 0.6 - 1.2 * I;
 
 
 //run with
-//gcc -o mandel main.c modules/forkjoin.c modules/mandel.c modules/threadpool.c C-Thread-Pool/thpool.c -lm -lpng -pthread -Ofast
+//gcc -o mandel main.c modules/wthreads.c modules/mandel.c modules/wthreadpool.c C-Thread-Pool/thpool.c -lm -lpng -pthread -fopenmp -Ofast
 int main(int argc, char *argv[]) {
 
         if(argc == 1 || argc > 2) {
