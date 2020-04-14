@@ -41,8 +41,8 @@ double time_fork_join(int width, int height, double complex upper_left, double c
                 goto freeall;
         }
 
-        i = 0;
-        for(offset = 0; offset < arr_len; offset += chunk_len) {
+        for(i = 0; i < number_of_threads; i++) {
+                int offset = chunk_len * i;
                 //in case of last chunk is smaller than the previous ones.
                 int check_chunk_len = arr_len - offset > chunk_len ? chunk_len : arr_len - offset;
                 int top = rows_per_band * i;
@@ -61,7 +61,6 @@ double time_fork_join(int width, int height, double complex upper_left, double c
                         retval = -1;
                         goto freeall;
                 }
-                i++;
         }
 
         for(i = 0; i < number_of_threads; i++) {
