@@ -28,8 +28,8 @@ fn main() {
     let args: Vec<String> = std::env::args().collect();
 
     if args.len() != 2 && !(args.len() == 3 && args[2].eq("--release")) {
-        eprintln!("Usage: mandelbrot <method>");
-        eprintln!("Methods: forkjoin|fj, crossbeam|cb, scoped_threadpool|st all>");
+        eprintln!("Usage: mandelbrot <Method>");
+        eprintln!("Methods: forkjoin|fj, crossbeam|cb, scoped_threadpool|st, all>");
         std::process::exit(1);
     }
 

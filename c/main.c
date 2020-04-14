@@ -4,7 +4,7 @@
 #include <time.h>
 #include <string.h>
 #include "modules/mandel.h"
-#include "modules/forkjoin.h"
+#include "modules/threads.h"
 #include "modules/threadpool.h"
 
 static int WIDTH = 5000;
@@ -19,17 +19,17 @@ int main(int argc, char *argv[]) {
 
         if(argc == 1 || argc > 2) {
                 fprintf(stderr, "Usage: ./mandel <arg>\n");
-                fprintf(stderr, "Methods: forkjoin|fj, threadpool|tp, all\n");
+                fprintf(stderr, "Methods: threads|th, threadpool|tp, all\n");
                 exit(EXIT_FAILURE);
         }
 
-        if(!strcmp(argv[1], "forkjoin") || !strcmp(argv[1], "fj") || !strcmp(argv[1], "all")) {
+        if(!strcmp(argv[1], "threads") || !strcmp(argv[1], "th") || !strcmp(argv[1], "all")) {
                 double res = time_fork_join(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 12);
                 if(res == -1.0) {
                         fprintf(stderr, "time fork join failed\n");
                         exit(EXIT_FAILURE);
                 }
-                printf("Forkjoin: %fms\n", res);
+                printf("Threads: %fms\n", res);
         }
 
         if(!strcmp(argv[1], "threadpool") || !strcmp(argv[1], "tp") || !strcmp(argv[1], "all")) {
