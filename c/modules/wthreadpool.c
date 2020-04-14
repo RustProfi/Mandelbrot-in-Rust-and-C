@@ -76,7 +76,7 @@ double time_threadpool(int width, int height, double complex upper_left, double 
                 goto freeall;
         }
 
-        if(draw == 1) {
+        if(draw) {
                 if(write_image("mandel.png", pixels, width, height) == -1) {
                         fprintf(stderr, "write image failed\n");
                         retval = -1;
