@@ -95,7 +95,7 @@ pub fn render(
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
 ) -> Result<(), CustomError> {
-    if !(pixels.len() == bounds.0 * bounds.1) {
+    if pixels.len() != bounds.0 * bounds.1 {
         return Err(CustomError::UnfittingArray);
     }
 
