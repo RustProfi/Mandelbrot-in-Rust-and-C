@@ -7,11 +7,10 @@ mod wrayon;
 mod wscopedthreadpool;
 mod wthreads;
 mod wthreadsunsafe;
-use mandelbrot::measure::measure_workload_rayon;
-use mandelbrot::measure::measure_workload_scoped_threadpool;
-use mandelbrot::measure::measure_workload_crossbeam;
-use mandelbrot::measure::measure_workload_threads_unsafe;
-use mandelbrot::measure::measure_workload_threads;
+use mandelbrot::measure::{
+    measure_workload_crossbeam, measure_workload_rayon, measure_workload_scoped_threadpool,
+    measure_workload_threads, measure_workload_threads_unsafe,
+};
 use num::Complex;
 use std::process::exit;
 use wcrossbeam::time_with_crossbeam;
@@ -127,7 +126,14 @@ fn main() {
                 }
             }
         } else {
-            match time_with_scoped_threadpool(BOUNDS, UPPER_LEFT, LOWER_RIGHT, ROWS_PER_BAND, 4, DRAW) {
+            match time_with_scoped_threadpool(
+                BOUNDS,
+                UPPER_LEFT,
+                LOWER_RIGHT,
+                ROWS_PER_BAND,
+                4,
+                DRAW,
+            ) {
                 Ok(time) => println!("Time with scoped_threadpool: {}ms", time),
                 Err(e) => {
                     eprintln!("{}", e);
