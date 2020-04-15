@@ -22,7 +22,7 @@ static double complex LOWER_RIGHT = 0.6 - 1.2 * I;
 int main(int argc, char *argv[]) {
 
         if(argc == 1 || argc > 3) {
-                fprintf(stderr, "Usage: ./mandel <Method> [args]\n");
+                fprintf(stderr, "Usage: mandelbrot <Method> [args]\n");
                 fprintf(stderr, "Methods: threads|th, threadpool|tp, openmp|op, all\n");
                 fprintf(stderr, "args: -m (Performance measure)\n");
                 exit(EXIT_FAILURE);
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
         if(!strcmp(argv[1], "threads") || !strcmp(argv[1], "th") || !strcmp(argv[1], "all")) {
                 if(argv[2] != NULL && !strcmp(argv[2], "-m")) {
                         FILE *fp;
-                        fp = fopen("c_threads_performance.txt", "wa");
+                        fp = fopen("c_threads_performance.txt", "w");
                         if (fp == NULL) {
                                 fprintf(stderr, "Could not open file for writing\n");
                                 exit(EXIT_FAILURE);

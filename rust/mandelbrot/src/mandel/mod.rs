@@ -2,7 +2,7 @@ extern crate image;
 extern crate num;
 
 use crate::customerror::CustomError;
-use crate::wforkjoinunsafe::Wrapper;
+use crate::wthreadsunsafe::Wrapper;
 use image::png::PNGEncoder;
 use image::ColorType;
 use num::Complex;

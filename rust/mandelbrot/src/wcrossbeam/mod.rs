@@ -1,6 +1,6 @@
 extern crate crossbeam;
 use crate::customerror::CustomError;
-use crate::mandel::{pixel_to_point, render};
+use crate::mandel::{pixel_to_point, render, write_image};
 use crate::time::{Clock, MyTimestamp};
 use num::Complex;
 
@@ -18,6 +18,7 @@ pub fn time_with_crossbeam(
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
     number_of_threads: usize,
+    draw: bool,
 ) -> Result<f64, CustomError> {
     let mut pixels = vec![0; bounds.0 * bounds.1];
     //if rows_per_band doesn't fit perfectly in pixels_len without rest, it must be round upward to make sure that the bands cover the entire image.
@@ -40,7 +41,7 @@ pub fn time_with_crossbeam(
     //und auch mit dem failure crate, welches einen Wrapper um "jeden" Fehlertyp
     //macht. In diesem Fall kann es das aber auch nicht, weil die size des Errors zur
     //Kompilierzeit nicht bekannt ist. Hier hat Rust noch eine Lücke zu füllen.
-    crossbeam::scope(|spawner| {
+    match crossbeam::scope(|spawner| {
         for (i, band) in bands.into_iter().enumerate() {
             let top = rows_per_band * i;
             let height = band.len() / bounds.0;
@@ -53,9 +54,14 @@ pub fn time_with_crossbeam(
                 Ok(())
             });
         }
-    });
+    }) {
+        Ok(_) => {}
+        Err(_) => return Err(CustomError::CrossbeamError),
+    }
 
     end.gettime(Clock::ClockMonotonicRaw)?;
-    crate::mandel::write_image("mandel.png", &pixels, bounds)?;
+    if draw {
+        write_image("mandel.png", &pixels, bounds)?;
+    }
     Ok(start.compute_time_millis(end))
 }

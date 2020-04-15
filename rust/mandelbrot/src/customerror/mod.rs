@@ -8,6 +8,7 @@ pub enum CustomError {
     ImageError(image::ImageError),
     TimerError,
     ThreadPanic,
+    CrossbeamError,
 }
 
 impl fmt::Display for CustomError {
@@ -18,6 +19,7 @@ impl fmt::Display for CustomError {
             CustomError::ImageError(ref e) => write!(f, "{}", e),
             CustomError::TimerError => write!(f, "Unsafe C Timer threw an error"),
             CustomError::ThreadPanic => write!(f, "Thread paniced"),
+            CustomError::CrossbeamError => write!(f, "Crossbeam paniced"),
         }
     }
 }
@@ -30,6 +32,7 @@ impl fmt::Debug for CustomError {
             CustomError::ImageError(ref e) => write!(f, "{}", e),
             CustomError::TimerError => write!(f, "Unsafe C Timer threw an error"),
             CustomError::ThreadPanic => write!(f, "Thread paniced"),
+            CustomError::CrossbeamError => write!(f, "Crossbeam paniced"),
         }
     }
 }
