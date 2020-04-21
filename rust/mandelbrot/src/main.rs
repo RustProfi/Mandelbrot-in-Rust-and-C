@@ -131,7 +131,7 @@ fn main() {
                 UPPER_LEFT,
                 LOWER_RIGHT,
                 ROWS_PER_BAND,
-                4,
+                8,
                 DRAW,
             ) {
                 Ok(time) => println!("Time with scoped_threadpool: {}ms", time),

@@ -1,5 +1,5 @@
 [package]
-name = "forkjoin"
+name = "simplethread"
 version = "0.1.0"
 authors = ["marno"]
 edition = "2018"

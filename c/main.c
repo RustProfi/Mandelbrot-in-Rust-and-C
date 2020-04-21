@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
                         for(int rows_per_band = 1; rows_per_band <= 60; rows_per_band++) {
                                 double time = 0;
                                 for(int i = 0; i < 20; i++) {
-                                        double res = time_threadpool(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, rows_per_band, 4, NOTDRAW);
+                                        double res = time_threadpool(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, rows_per_band, 8, NOTDRAW);
                                         if(res == -1.0) {
                                                 fprintf(stderr, "time with threadpool failed\n");
                                                 exit(EXIT_FAILURE);
