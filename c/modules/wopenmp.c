@@ -8,7 +8,7 @@
 //-1.0 in case of error
 double time_openmp(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band, int number_of_threads, int draw) {
         char *pixels;
-        int i, offset, chunk_len, arr_len, num_of_jobs;
+        int i, chunk_len, arr_len, num_of_jobs;
         double retval;
         struct timespec start, end;
 
@@ -19,13 +19,13 @@ double time_openmp(int width, int height, double complex upper_left, double comp
 
         pixels = (char*)malloc(arr_len * sizeof(char));
         if(!pixels) {
-                fprintf(stderr, "malloc failed\n");
+                perror("malloc failed");
                 retval = -1;
                 goto freepixels;
         }
 
         if(clock_gettime(CLOCK_MONOTONIC_RAW, &start) == -1) {
-                fprintf(stderr, "clock gettime failed\n");
+                perror("clock gettime failed");
                 retval = -1;
                 goto freepixels;
         }
@@ -44,14 +44,14 @@ double time_openmp(int width, int height, double complex upper_left, double comp
         }
 
         if(clock_gettime(CLOCK_MONOTONIC_RAW, &end) == -1) {
-                fprintf(stderr, "clock gettime failed\n");
+                perror("clock gettime failed");
                 retval = -1;
                 goto freepixels;
         }
 
         if(draw) {
                 if(write_image("mandel.png", pixels, width, height) == -1) {
-                        fprintf(stderr, "write image failed\n");
+                        perror("write image failed");
                         retval = -1;
                         goto freepixels;
                 }

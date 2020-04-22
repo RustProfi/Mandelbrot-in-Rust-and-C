@@ -9,7 +9,7 @@
 //-1.0 in case of error
 double time_threadpool(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band, int number_of_threads, int draw) {
         char *pixels;
-        int i, offset, chunk_len, arr_len, num_of_jobs;
+        int i, chunk_len, arr_len, num_of_jobs;
         double retval;
         struct timespec start, end;
         threadpool thpool;
@@ -22,7 +22,7 @@ double time_threadpool(int width, int height, double complex upper_left, double 
 
         pixels = (char*)malloc(arr_len * sizeof(char));
         if(!pixels) {
-                fprintf(stderr, "malloc failed\n");
+                perror("malloc failed");
                 retval = -1;
                 goto freepixels;
         }
@@ -30,14 +30,14 @@ double time_threadpool(int width, int height, double complex upper_left, double 
         for(i = 0; i < num_of_jobs; ++i) {
                 args[i] = (render_args*)malloc(sizeof(render_args));
                 if(!args[i]) {
-                        fprintf(stderr, "malloc failed\n");
+                        perror("malloc failed");
                         retval = -1;
                         goto freeall;
                 }
         }
 
         if(clock_gettime(CLOCK_MONOTONIC_RAW, &start) == -1) {
-                fprintf(stderr, "clock gettime failed\n");
+                perror("clock gettime failed");
                 retval = -1;
                 goto freeall;
         }
@@ -61,7 +61,7 @@ double time_threadpool(int width, int height, double complex upper_left, double 
                 args[i]->lower_right = band_lower_right;
 
                 if(thpool_add_work(thpool, (void*)render, args[i]) == -1) {
-                        fprintf(stderr, "submit job to the threadpool failed\n");
+                        perror("submit job to the threadpool failed");
                         retval = -1;
                         goto freeall;
                 }
@@ -71,14 +71,14 @@ double time_threadpool(int width, int height, double complex upper_left, double 
 
 
         if(clock_gettime(CLOCK_MONOTONIC_RAW, &end) == -1) {
-                fprintf(stderr, "clock gettime failed\n");
+                perror("clock gettime failed");
                 retval = -1;
                 goto freeall;
         }
 
         if(draw) {
                 if(write_image("mandel.png", pixels, width, height) == -1) {
-                        fprintf(stderr, "write image failed\n");
+                        perror("write image failed");
                         retval = -1;
                         goto freeall;
                 }
@@ -89,7 +89,7 @@ double time_threadpool(int width, int height, double complex upper_left, double 
 freeall:
         thpool_destroy(thpool);
         for(i = 0; i < num_of_jobs; i++) {
-                if(args[i] != NULL)
+                if(args[i])
                         free(args[i]);
         }
 freepixels:

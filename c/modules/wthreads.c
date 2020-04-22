@@ -8,7 +8,7 @@
 //-1.0 in case of error
 double time_threads(int width, int height, double complex upper_left, double complex lower_right, int number_of_threads, int draw) {
         char *pixels;
-        int i, offset, rows_per_band, chunk_len, arr_len;
+        int i, rows_per_band, chunk_len, arr_len;
         double retval;
         struct timespec start, end;
         pthread_t thread_id[number_of_threads];
@@ -21,7 +21,7 @@ double time_threads(int width, int height, double complex upper_left, double com
 
         pixels = (char*)malloc(arr_len * sizeof(char));
         if(!pixels) {
-                fprintf(stderr, "malloc failed\n");
+                perror("malloc failed");
                 retval = -1;
                 goto freepixels;
         }
@@ -29,14 +29,14 @@ double time_threads(int width, int height, double complex upper_left, double com
         for(i = 0; i < number_of_threads; ++i) {
                 args[i] = (render_args*)malloc(sizeof(render_args));
                 if(!args[i]) {
-                        fprintf(stderr, "malloc failed\n");
+                        perror("malloc failed");
                         retval = -1;
                         goto freeall;
                 }
         }
 
         if(clock_gettime(CLOCK_MONOTONIC_RAW, &start) == -1) {
-                fprintf(stderr, "clock gettime failed\n");
+                perror("clock gettime failed");
                 retval = -1;
                 goto freeall;
         }
@@ -57,7 +57,7 @@ double time_threads(int width, int height, double complex upper_left, double com
                 args[i]->lower_right = band_lower_right;
 
                 if(pthread_create(&thread_id[i], NULL, render, args[i]) != 0) {
-                        fprintf(stderr, "create thread failed\n");
+                        perror("create thread failed");
                         retval = -1;
                         goto freeall;
                 }
@@ -65,21 +65,21 @@ double time_threads(int width, int height, double complex upper_left, double com
 
         for(i = 0; i < number_of_threads; i++) {
                 if(pthread_join(thread_id[i], NULL) != 0) {
-                        fprintf(stderr, "join thread failed\n");
+                        perror("join thread failed");
                         retval = -1;
                         goto freeall;
                 };
         }
 
         if(clock_gettime(CLOCK_MONOTONIC_RAW, &end) == -1) {
-                fprintf(stderr, "clock gettime failed\n");
+                perror("clock gettime failed");
                 retval = -1;
                 goto freeall;
         }
 
         if(draw) {
                 if(write_image("mandel.png", pixels, width, height) == -1) {
-                        fprintf(stderr, "write image failed\n");
+                        perror("write image failed");
                         retval = -1;
                         goto freeall;
                 }
@@ -89,7 +89,7 @@ double time_threads(int width, int height, double complex upper_left, double com
 
 freeall:
         for(i = 0; i < number_of_threads; i++) {
-                if(args[i] != NULL)
+                if(args[i])
                         free(args[i]);
         }
 freepixels:
