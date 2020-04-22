@@ -72,10 +72,10 @@ void render_openmp(char *chunk, int width, int height, double complex upper_left
 //in case of return 0 everything is ok
 int write_image(char *filename, char *pixels, int width, int height) {
         int code = 0;
-        FILE *fp = NULL;
-        png_structp png_ptr = NULL;
-        png_infop info_ptr = NULL;
-        png_bytep row = NULL;
+        FILE *fp;
+        png_structp png_ptr;
+        png_infop info_ptr;
+        png_bytep row;
 
         // Open file for writing (binary mode)
         fp = fopen(filename, "wb");

@@ -31,15 +31,6 @@ fn escape_mandel_iterations(c: Complex<f64>) -> Option<u32> {
     None
 }
 
-#[test]
-fn test_escape_mandel_iterations() {
-    let x = Complex {
-        re: -0.11456,
-        im: 0.89808,
-    };
-    assert_eq!(escape_mandel_iterations(x).unwrap(), 66);
-}
-
 /// Given the row and column of a pixel in the output image, return the
 /// corresponding point on the complex plane.
 ///
@@ -62,18 +53,6 @@ pub fn pixel_to_point(
         im: upper_left.im - pixel.1 as f64 * height / bounds.1 as f64, // Why subtraction here? pixel.1 increases as we go down,
                                                                        // but the imaginary component increases as we go up.
     }
-}
-#[test]
-fn test_pixel_to_point() {
-    assert_eq!(
-        pixel_to_point(
-            (100, 100),
-            (25, 75),
-            Complex { re: -1.0, im: 1.0 },
-            Complex { re: 1.0, im: -1.0 }
-        ),
-        Complex { re: -0.5, im: -0.5 }
-    );
 }
 
 ///Render a rectangle of the Mandelbrot set into a buffer of pixels.

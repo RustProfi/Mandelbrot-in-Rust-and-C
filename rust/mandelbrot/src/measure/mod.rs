@@ -8,6 +8,14 @@ use num::Complex;
 use std::fs::File;
 use std::io::prelude::*;
 
+///Measures for a given base and bounds how long it takes for every number of threads in a
+///range from 4 to 60 by repeating the measure 20 times each. The results are written to a file.
+
+/// # Arguments
+///
+/// * `bounds` - The width and height of the image
+/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
+/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
 pub fn measure_workload_threads(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
@@ -26,6 +34,14 @@ pub fn measure_workload_threads(
     Ok(())
 }
 
+///Measures for a given base and bounds how long it takes for every number of threads in a
+///range from 4 to 60 by repeating the measure 20 times each. The results are written to a file.
+
+/// # Arguments
+///
+/// * `bounds` - The width and height of the image
+/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
+/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
 pub fn measure_workload_threads_unsafe(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
@@ -44,6 +60,14 @@ pub fn measure_workload_threads_unsafe(
     Ok(())
 }
 
+///Measures for a given base and bounds how long it takes for every number of threads in a
+///range from 4 to 60 by repeating the measure 20 times each. The results are written to a file.
+
+/// # Arguments
+///
+/// * `bounds` - The width and height of the image
+/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
+/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
 pub fn measure_workload_crossbeam(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
@@ -62,6 +86,15 @@ pub fn measure_workload_crossbeam(
     Ok(())
 }
 
+///Measures for a given base and bounds how long it takes for every number of rows per band in a
+///range from 1 to 60 by repeating the measure 20 times each. The results are written to a file.
+
+/// # Arguments
+///
+/// * `bounds` - The width and height of the image
+/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
+/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
+/// * `number_of_threads` - The number of threads the threadpool will be initialized with
 pub fn measure_workload_scoped_threadpool(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
@@ -88,6 +121,14 @@ pub fn measure_workload_scoped_threadpool(
     Ok(())
 }
 
+///Measures for a given base and bounds how long it takes for every number of rows per band in a
+///range from 1 to 60 by repeating the measure 20 times each. The results are written to a file.
+
+/// # Arguments
+///
+/// * `bounds` - The width and height of the image
+/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
+/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
 pub fn measure_workload_rayon(
     bounds: (usize, usize),
     upper_left: Complex<f64>,

@@ -26,24 +26,14 @@ static DRAW: bool = true;
 static UPPER_LEFT: Complex<f64> = Complex { re: -1.6, im: 1.2 };
 static LOWER_RIGHT: Complex<f64> = Complex { re: 0.6, im: -1.2 };
 
-//Todo alles kommentieren und überlegen wo unwrap sinn macht und wo nicht
-//Todo schönes error handling
-
+///A basic tui with error handling
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-
-    if args.len() == 1 || args.len() > 4 {
-        eprintln!("Usage: ./mandelbrot <Method> [args]");
-        eprintln!("Methods: threads|th, threadsunsafe|tu, crossbeam|cb, scoped_threadpool|st, rayon|ra, all>");
-        eprintln!("args: -m (Performance measure)");
-        std::process::exit(1);
-    }
 
     if args.iter().any(|x| x.eq("threads"))
         || args.iter().any(|x| x.eq("th"))
         || args.iter().any(|x| x.eq("all"))
     {
-        //Best workload check for threads
         if args.iter().any(|x| x.eq("-m")) {
             match measure_workload_threads(BOUNDS, UPPER_LEFT, LOWER_RIGHT) {
                 Ok(_) => println!("Workload measure with threading complete!"),
@@ -61,13 +51,10 @@ fn main() {
                 }
             }
         }
-    }
-
-    if args.iter().any(|x| x.eq("threadsunsafe"))
+    } else if args.iter().any(|x| x.eq("threadsunsafe"))
         || args.iter().any(|x| x.eq("tu"))
         || args.iter().any(|x| x.eq("all"))
     {
-        //Best workload check for threads unsafe
         if args.iter().any(|x| x.eq("-m")) {
             match measure_workload_threads_unsafe(BOUNDS, UPPER_LEFT, LOWER_RIGHT) {
                 Ok(_) => println!("Workload measure with threading unsafe complete!"),
@@ -85,13 +72,10 @@ fn main() {
                 }
             }
         }
-    }
-
-    if args.iter().any(|x| x.eq("crossbeam"))
+    } else if args.iter().any(|x| x.eq("crossbeam"))
         || args.iter().any(|x| x.eq("cb"))
         || args.iter().any(|x| x.eq("all"))
     {
-        //Best workload check for crossbeam
         if args.iter().any(|x| x.eq("-m")) {
             match measure_workload_crossbeam(BOUNDS, UPPER_LEFT, LOWER_RIGHT) {
                 Ok(_) => println!("Workload measure with crossbeam complete!"),
@@ -109,14 +93,10 @@ fn main() {
                 }
             }
         }
-    }
-
-    //10x verschiedene row anzahl
-    if args.iter().any(|x| x.eq("scoped_threadpool"))
+    } else if args.iter().any(|x| x.eq("scoped_threadpool"))
         || args.iter().any(|x| x.eq("st"))
         || args.iter().any(|x| x.eq("all"))
     {
-        //Best workload check for scoped_threadpool
         if args.iter().any(|x| x.eq("-m")) {
             match measure_workload_scoped_threadpool(BOUNDS, UPPER_LEFT, LOWER_RIGHT, 4) {
                 Ok(_) => println!("Workload measure with scoped_threadpool complete!"),
@@ -141,13 +121,10 @@ fn main() {
                 }
             }
         }
-    }
-
-    if args.iter().any(|x| x.eq("rayon"))
+    } else if args.iter().any(|x| x.eq("rayon"))
         || args.iter().any(|x| x.eq("ra"))
         || args.iter().any(|x| x.eq("all"))
     {
-        //Best workload check for scoped_threadpool
         if args.iter().any(|x| x.eq("-m")) {
             match measure_workload_rayon(BOUNDS, UPPER_LEFT, LOWER_RIGHT) {
                 Ok(_) => println!("Workload measure with rayon complete!"),
@@ -165,5 +142,10 @@ fn main() {
                 }
             }
         }
+    } else {
+        eprintln!("Usage: ./mandelbrot <Method> [args]");
+        eprintln!("Methods: threads|th, threadsunsafe|tu, crossbeam|cb, scoped_threadpool|st, rayon|ra, all>");
+        eprintln!("args: -m (Performance measure)");
+        std::process::exit(1);
     }
 }

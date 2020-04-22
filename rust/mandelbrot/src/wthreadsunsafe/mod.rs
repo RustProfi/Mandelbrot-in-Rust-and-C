@@ -7,7 +7,7 @@ use std::mem;
 use std::sync::Arc;
 use std::thread;
 
-///A wrapper around UnsafeCell<T> to make UnsafeCell Send and Sync
+///A wrapper around UnsafeCell<T> to have Send and Sync
 pub struct Wrapper<T>(pub UnsafeCell<T>);
 unsafe impl<T> Send for Wrapper<T> {}
 unsafe impl<T> Sync for Wrapper<T> {}
