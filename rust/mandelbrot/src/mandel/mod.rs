@@ -107,7 +107,7 @@ pub fn render(
 /// * `bounds` - Specifies which part will be rendered.
 /// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
 /// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
-pub fn render_fork_join(
+pub fn render_threads(
     pixels: Arc<Mutex<Vec<u8>>>,
     offset: usize,
     bounds: (usize, usize),
@@ -148,13 +148,13 @@ pub fn render_fork_join(
 /// * `bounds` - Specifies which part will be rendered.
 /// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
 /// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
-pub fn render_fork_join_unsafe(
+pub fn render_threads_unsafe(
     pixels: Arc<Wrapper<*mut u8>>,
     offset: usize,
     bounds: (usize, usize),
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
-) -> Result<(), CustomError> {
+) {
     unsafe {
         //The get() function returns a *mut T pointer which needs to be dereferenced
         //to get the Pointer.
@@ -176,7 +176,6 @@ pub fn render_fork_join_unsafe(
             }
         }
     }
-    Ok(())
 }
 
 /// Write the buffer `pixels`, whose dimensions are given by `bounds`, to the

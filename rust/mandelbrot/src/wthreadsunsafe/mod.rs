@@ -1,5 +1,5 @@
 use crate::customerror::CustomError;
-use crate::mandel::{pixel_to_point, render_fork_join_unsafe, write_image};
+use crate::mandel::{pixel_to_point, render_threads_unsafe, write_image};
 use crate::time::{Clock, MyTimestamp};
 use num::Complex;
 use std::cell::UnsafeCell;
@@ -65,23 +65,21 @@ pub fn time_threads_unsafe(
         let band_upper_left = pixel_to_point(bounds, (0, top), upper_left, lower_right);
         let band_lower_right =
             pixel_to_point(bounds, (bounds.0, top + height), upper_left, lower_right);
-        threads.push(thread::spawn(move || -> Result<(), CustomError> {
-            render_fork_join_unsafe(
+        threads.push(thread::spawn(move || {
+            render_threads_unsafe(
                 pixels_ref,
                 offset,
                 band_bounds,
                 band_upper_left,
                 band_lower_right,
-            )?;
-            Ok(())
+            );
         }));
     }
 
     for thread in threads {
-        match thread.join() {
-            Ok(_) => {}
-            Err(_) => return Err(CustomError::ThreadPanic),
-        }
+        if let Err(_) = thread.join() {
+            return Err(CustomError::ThreadPanic);
+        };
     }
     end.gettime(Clock::ClockMonotonicRaw)?;
 

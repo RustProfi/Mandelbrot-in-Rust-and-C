@@ -1,11 +1,11 @@
+extern crate libc;
 #[cfg(test)]
 extern crate mandelbrot;
 extern crate num;
-extern crate libc;
+use libc::timespec;
 use mandelbrot::mandel::pixel_to_point;
 use mandelbrot::time::MyTimestamp;
 use num::Complex;
-use libc::timespec;
 
 #[test]
 fn test_pixel_to_point() {
@@ -19,7 +19,6 @@ fn test_pixel_to_point() {
         Complex { re: -0.5, im: -0.5 }
     );
 }
-
 
 #[test]
 fn test_compute_time_millis() {

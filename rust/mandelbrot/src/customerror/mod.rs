@@ -19,7 +19,7 @@ impl fmt::Display for CustomError {
             CustomError::ImageError(ref e) => write!(f, "{}", e),
             CustomError::TimerError => write!(f, "Unsafe C Timer threw an error"),
             CustomError::ThreadPanic => write!(f, "Thread paniced"),
-            CustomError::CrossbeamError => write!(f, "Crossbeam paniced"),
+            CustomError::CrossbeamError => write!(f, "Crossbeam child threads paniced"),
         }
     }
 }
@@ -32,7 +32,7 @@ impl fmt::Debug for CustomError {
             CustomError::ImageError(ref e) => write!(f, "{}", e),
             CustomError::TimerError => write!(f, "Unsafe C Timer threw an error"),
             CustomError::ThreadPanic => write!(f, "Thread paniced"),
-            CustomError::CrossbeamError => write!(f, "Crossbeam paniced"),
+            CustomError::CrossbeamError => write!(f, "Crossbeam child threads paniced"),
         }
     }
 }
@@ -46,5 +46,14 @@ impl From<std::io::Error> for CustomError {
 impl From<image::ImageError> for CustomError {
     fn from(error: image::ImageError) -> Self {
         CustomError::ImageError(error)
+    }
+}
+
+impl From<std::boxed::Box<dyn std::any::Any + std::marker::Send>> for CustomError {
+    fn from(_error: std::boxed::Box<dyn std::any::Any + std::marker::Send>) -> Self {
+        /*if let Err(string) = error.downcast::<String>() {
+                println!("String ({:#?})", string);
+            }*/
+        CustomError::CrossbeamError
     }
 }

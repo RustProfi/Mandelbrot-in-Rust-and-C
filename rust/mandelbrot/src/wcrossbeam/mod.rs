@@ -35,13 +35,7 @@ pub fn time_with_crossbeam(
 
     start.gettime(Clock::ClockMonotonicRaw)?;
 
-    //Todo: Englisch
-    //Fehlertyp std::convert::From<std::boxed::Box<dyn std::any::Any + std::marker::Send>>
-    //lässt sich nicht mit einem From trait in CustomError umformen
-    //und auch mit dem failure crate, welches einen Wrapper um "jeden" Fehlertyp
-    //macht. In diesem Fall kann es das aber auch nicht, weil die size des Errors zur
-    //Kompilierzeit nicht bekannt ist. Hier hat Rust noch eine Lücke zu füllen.
-    match crossbeam::scope(|spawner| {
+    crossbeam::scope(|spawner| {
         for (i, band) in bands.into_iter().enumerate() {
             let top = rows_per_band * i;
             let height = band.len() / bounds.0;
@@ -49,15 +43,12 @@ pub fn time_with_crossbeam(
             let band_upper_left = pixel_to_point(bounds, (0, top), upper_left, lower_right);
             let band_lower_right =
                 pixel_to_point(bounds, (bounds.0, top + height), upper_left, lower_right);
-            spawner.spawn(move |_| -> Result<(), CustomError> {
-                render(band, band_bounds, band_upper_left, band_lower_right)?;
-                Ok(())
+            spawner.spawn(move |_| {
+                //unwrap here is ok since only child threads will panic.
+                render(band, band_bounds, band_upper_left, band_lower_right).unwrap();
             });
         }
-    }) {
-        Ok(_) => {}
-        Err(_) => return Err(CustomError::CrossbeamError),
-    }
+    })?;
 
     end.gettime(Clock::ClockMonotonicRaw)?;
     if draw {

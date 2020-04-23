@@ -1,5 +1,5 @@
 use crate::customerror::CustomError;
-use crate::mandel::{pixel_to_point, render_fork_join, write_image};
+use crate::mandel::{pixel_to_point, render_threads, write_image};
 use crate::time::{Clock, MyTimestamp};
 use num::Complex;
 use std::sync::Arc;
@@ -53,7 +53,7 @@ pub fn time_threads(
         let band_lower_right =
             pixel_to_point(bounds, (bounds.0, top + height), upper_left, lower_right);
         threads.push(thread::spawn(move || -> Result<(), CustomError> {
-            render_fork_join(
+            render_threads(
                 pixels_ref,
                 offset,
                 band_bounds,
@@ -66,7 +66,7 @@ pub fn time_threads(
 
     for thread in threads {
         match thread.join() {
-            Ok(_) => {}
+            Ok(result) => result?,
             Err(_) => return Err(CustomError::ThreadPanic),
         }
     }
