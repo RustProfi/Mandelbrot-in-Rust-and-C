@@ -8,9 +8,9 @@
 #include "modules/wthreadpool.h"
 #include "modules/wopenmp.h"
 
-static int WIDTH = 100;
-static int HEIGHT = 100;
-static int NTHREADS = 4;
+static int WIDTH = 5000;
+static int HEIGHT = 5000;
+static int NTHREADS = 50;
 static int DRAW = 1;
 static int NOTDRAW = 0;
 static double complex UPPER_LEFT = -1.6 + 1.2 * I;
