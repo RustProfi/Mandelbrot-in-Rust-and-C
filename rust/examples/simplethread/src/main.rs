@@ -1,6 +1,6 @@
+use std::process::exit;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::process::exit;
 use std::thread;
 
 fn main() {
@@ -11,12 +11,9 @@ fn main() {
     //and increment the reference count
     let arr_ref = arr.clone();
     //Closure takes Ownership of arr_ref
-    match thread::spawn(move || fillvec(arr_ref)).join() {
-        Ok(_) => {},
-        Err(_) => {
-            eprintln!("Thread failed");
-            exit(1);
-        }
+    if thread::spawn(move || fillvec(arr_ref)).join().is_err() {
+        eprintln!("Thread failed");
+        exit(1);
     }
     println!("{:?}", arr.lock().unwrap());
 }
