@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
                                 exit(EXIT_FAILURE);
                         }
 
-                        for(int thread_count = 4; thread_count <= 60; thread_count++) {
+                        for(int thread_count = 4; thread_count <= 80; thread_count++) {
                                 double time = 0;
                                 for(int i = 0; i < 20; i++) {
                                         double res = time_threads(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, thread_count, NOTDRAW);
@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
                                 exit(EXIT_FAILURE);
                         }
 
-                        for(int rows_per_band = 1; rows_per_band <= 60; rows_per_band++) {
+                        for(int rows_per_band = 1; rows_per_band <= 80; rows_per_band++) {
                                 double time = 0;
                                 for(int i = 0; i < 20; i++) {
                                         double res = time_threadpool(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, rows_per_band, 8, NOTDRAW);
@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
                                 exit(EXIT_FAILURE);
                         }
 
-                        for(int thread_count = 4; thread_count <= 60; thread_count++) {
+                        for(int thread_count = 4; thread_count <= 80; thread_count++) {
                                 double time = 0;
                                 for(int i = 0; i < 20; i++) {
                                         double res = time_openmp(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 5, thread_count, NOTDRAW);
