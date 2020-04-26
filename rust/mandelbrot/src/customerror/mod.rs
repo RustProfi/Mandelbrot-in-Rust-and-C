@@ -51,9 +51,6 @@ impl From<image::ImageError> for CustomError {
 
 impl From<std::boxed::Box<dyn std::any::Any + std::marker::Send>> for CustomError {
     fn from(_error: std::boxed::Box<dyn std::any::Any + std::marker::Send>) -> Self {
-        /*if let Err(string) = error.downcast::<String>() {
-                println!("String ({:#?})", string);
-            }*/
         CustomError::CrossbeamError
     }
 }

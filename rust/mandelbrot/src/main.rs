@@ -98,7 +98,7 @@ fn main() {
         || args.iter().any(|x| x.eq("all"))
     {
         if args.iter().any(|x| x.eq("-m")) {
-            match measure_workload_scoped_threadpool(BOUNDS, UPPER_LEFT, LOWER_RIGHT, 4) {
+            match measure_workload_scoped_threadpool(BOUNDS, UPPER_LEFT, LOWER_RIGHT, 8) {
                 Ok(_) => println!("Workload measure with scoped_threadpool complete!"),
                 Err(e) => {
                     eprintln!("{}", e);

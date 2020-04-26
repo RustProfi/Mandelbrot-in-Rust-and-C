@@ -9,7 +9,7 @@ use std::fs::File;
 use std::io::prelude::*;
 
 ///Measures for a given base and bounds how long it takes for every number of threads in a
-///range from 4 to 60 by repeating the measure 20 times each. The results are written to a file.
+///range from 4 to 80 by repeating the measurement 20 times each. The results are written to a file.
 
 /// # Arguments
 ///
@@ -23,7 +23,7 @@ pub fn measure_workload_threads(
 ) -> Result<(), CustomError> {
     let mut file = File::create("rust_threads_performance.txt")?;
 
-    for thread_count in 4..=60 {
+    for thread_count in 4..=80 {
         let mut time: f64 = 0.0;
         for _ in 0..20 {
             time += time_threads(bounds, upper_left, lower_right, thread_count, false)?;
@@ -35,7 +35,7 @@ pub fn measure_workload_threads(
 }
 
 ///Measures for a given base and bounds how long it takes for every number of threads in a
-///range from 4 to 60 by repeating the measure 20 times each. The results are written to a file.
+///range from 4 to 80 by repeating the measurement 20 times each. The results are written to a file.
 
 /// # Arguments
 ///
@@ -49,7 +49,7 @@ pub fn measure_workload_threads_unsafe(
 ) -> Result<(), CustomError> {
     let mut file = File::create("rust_threads_unsafe_performance.txt")?;
 
-    for thread_count in 4..=60 {
+    for thread_count in 4..=80 {
         let mut time: f64 = 0.0;
         for _ in 0..20 {
             time += time_threads_unsafe(bounds, upper_left, lower_right, thread_count, false)?;
@@ -61,7 +61,7 @@ pub fn measure_workload_threads_unsafe(
 }
 
 ///Measures for a given base and bounds how long it takes for every number of threads in a
-///range from 4 to 60 by repeating the measure 20 times each. The results are written to a file.
+///range from 4 to 80 by repeating the measurement 20 times each. The results are written to a file.
 
 /// # Arguments
 ///
@@ -75,7 +75,7 @@ pub fn measure_workload_crossbeam(
 ) -> Result<(), CustomError> {
     let mut file = File::create("rust_crossbeam_performance.txt")?;
 
-    for thread_count in 4..=60 {
+    for thread_count in 4..=80 {
         let mut time: f64 = 0.0;
         for _ in 0..20 {
             time += time_with_crossbeam(bounds, upper_left, lower_right, thread_count, false)?;
@@ -87,7 +87,7 @@ pub fn measure_workload_crossbeam(
 }
 
 ///Measures for a given base and bounds how long it takes for every number of rows per band in a
-///range from 1 to 60 by repeating the measure 20 times each. The results are written to a file.
+///range from 1 to 80 by repeating the measurement 20 times each. The results are written to a file.
 
 /// # Arguments
 ///
@@ -103,7 +103,7 @@ pub fn measure_workload_scoped_threadpool(
 ) -> Result<(), CustomError> {
     let mut file = File::create("rust_scoped_threadpool_performance.txt")?;
 
-    for rows_per_band in 1..=60 {
+    for rows_per_band in 1..=80 {
         let mut time: f64 = 0.0;
         for _ in 0..20 {
             time += time_with_scoped_threadpool(
@@ -122,7 +122,7 @@ pub fn measure_workload_scoped_threadpool(
 }
 
 ///Measures for a given base and bounds how long it takes for every number of rows per band in a
-///range from 1 to 60 by repeating the measure 20 times each. The results are written to a file.
+///range from 1 to 80 by repeating the measurement 20 times each. The results are written to a file.
 
 /// # Arguments
 ///
@@ -136,7 +136,7 @@ pub fn measure_workload_rayon(
 ) -> Result<(), CustomError> {
     let mut file = File::create("rust_rayon_performance.txt")?;
 
-    for rows_per_band in 1..=60 {
+    for rows_per_band in 1..=80 {
         let mut time: f64 = 0.0;
         for _ in 0..20 {
             time += time_with_rayon(bounds, upper_left, lower_right, rows_per_band, false)?;
