@@ -29,6 +29,12 @@ static LOWER_RIGHT: Complex<f64> = Complex { re: 0.6, im: -1.2 };
 ///A basic tui with error handling
 fn main() {
     let args: Vec<String> = std::env::args().collect();
+    if args.len() == 1 || args.len() > 4 {
+        eprintln!("Usage: ./mandelbrot <Method> [args]");
+        eprintln!("Methods: threads|th, threadsunsafe|tu, crossbeam|cb, scoped_threadpool|st, rayon|ra, all>");
+        eprintln!("args: -m (Performance measure)");
+        std::process::exit(1);
+    }
 
     if args.iter().any(|x| x.eq("threads"))
         || args.iter().any(|x| x.eq("th"))
@@ -51,7 +57,8 @@ fn main() {
                 }
             }
         }
-    } else if args.iter().any(|x| x.eq("threadsunsafe"))
+    }
+     if args.iter().any(|x| x.eq("threadsunsafe"))
         || args.iter().any(|x| x.eq("tu"))
         || args.iter().any(|x| x.eq("all"))
     {
@@ -72,7 +79,8 @@ fn main() {
                 }
             }
         }
-    } else if args.iter().any(|x| x.eq("crossbeam"))
+    }
+     if args.iter().any(|x| x.eq("crossbeam"))
         || args.iter().any(|x| x.eq("cb"))
         || args.iter().any(|x| x.eq("all"))
     {
@@ -93,7 +101,8 @@ fn main() {
                 }
             }
         }
-    } else if args.iter().any(|x| x.eq("scoped_threadpool"))
+    }
+     if args.iter().any(|x| x.eq("scoped_threadpool"))
         || args.iter().any(|x| x.eq("st"))
         || args.iter().any(|x| x.eq("all"))
     {
@@ -121,7 +130,8 @@ fn main() {
                 }
             }
         }
-    } else if args.iter().any(|x| x.eq("rayon"))
+    }
+     if args.iter().any(|x| x.eq("rayon"))
         || args.iter().any(|x| x.eq("ra"))
         || args.iter().any(|x| x.eq("all"))
     {
@@ -142,10 +152,5 @@ fn main() {
                 }
             }
         }
-    } else {
-        eprintln!("Usage: ./mandelbrot <Method> [args]");
-        eprintln!("Methods: threads|th, threadsunsafe|tu, crossbeam|cb, scoped_threadpool|st, rayon|ra, all>");
-        eprintln!("args: -m (Performance measure)");
-        std::process::exit(1);
     }
 }
