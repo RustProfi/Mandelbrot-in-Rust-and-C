@@ -58,7 +58,8 @@ fn main() {
             }
         }
     }
-     if args.iter().any(|x| x.eq("threadsunsafe"))
+    
+    if args.iter().any(|x| x.eq("threadsunsafe"))
         || args.iter().any(|x| x.eq("tu"))
         || args.iter().any(|x| x.eq("all"))
     {
@@ -80,7 +81,8 @@ fn main() {
             }
         }
     }
-     if args.iter().any(|x| x.eq("crossbeam"))
+
+    if args.iter().any(|x| x.eq("crossbeam"))
         || args.iter().any(|x| x.eq("cb"))
         || args.iter().any(|x| x.eq("all"))
     {
@@ -102,7 +104,8 @@ fn main() {
             }
         }
     }
-     if args.iter().any(|x| x.eq("scoped_threadpool"))
+
+    if args.iter().any(|x| x.eq("scoped_threadpool"))
         || args.iter().any(|x| x.eq("st"))
         || args.iter().any(|x| x.eq("all"))
     {
@@ -131,7 +134,8 @@ fn main() {
             }
         }
     }
-     if args.iter().any(|x| x.eq("rayon"))
+
+    if args.iter().any(|x| x.eq("rayon"))
         || args.iter().any(|x| x.eq("ra"))
         || args.iter().any(|x| x.eq("all"))
     {
