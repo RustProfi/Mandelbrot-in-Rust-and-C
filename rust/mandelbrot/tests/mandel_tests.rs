@@ -1,5 +1,5 @@
-extern crate libc;
 #[cfg(test)]
+extern crate libc;
 extern crate mandelbrot;
 extern crate num;
 use libc::timespec;
