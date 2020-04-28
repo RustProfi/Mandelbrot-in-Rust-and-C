@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
                         fclose(fp);
                 }
                 else {
-                        double res = time_threadpool(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 5, 8, DRAW);
+                        double res = time_threadpool(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 1, 8, DRAW);
                         if(res == -1.0) {
                                 perror("time with threadpool failed");
                                 exit(EXIT_FAILURE);
@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
                         for(int thread_count = 4; thread_count <= 80; thread_count++) {
                                 double time = 0;
                                 for(int i = 0; i < 20; i++) {
-                                        double res = time_openmp(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 5, thread_count, NOTDRAW);
+                                        double res = time_openmp(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 1, thread_count, NOTDRAW);
                                         if(res == -1.0) {
                                                 perror("time with openmp failed");
                                                 exit(EXIT_FAILURE);
@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
                         fclose(fp);
                 }
                 else {
-                        double res = time_openmp(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 5, NTHREADS, DRAW);
+                        double res = time_openmp(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 1, NTHREADS, DRAW);
                         if(res == -1.0) {
                                 perror("time with openmp failed");
                                 exit(EXIT_FAILURE);

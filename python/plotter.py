@@ -46,6 +46,8 @@ plt.legend()
 plt.title(sys.argv[3])
 plt.xlabel('Threads')
 plt.ylabel('Time(ms)')
-plt.annotate('Min C: %d, %.1fms'%(xmin1, ymin1), (xmin1, ymin1), xytext=(xmin1, ymin1 + 1000), bbox=bbox, arrowprops=arrowprops)
-plt.annotate('Min Rust: %d, %.1fms'%(xmin2, ymin2), (xmin2, ymin2), xytext=(xmin2, ymin2 + 500), bbox=bbox, arrowprops=arrowprops)
+#C
+plt.annotate('Min. value C\n%d Threads\n%.2f ms'%(xmin1, ymin1), (xmin1, ymin1), xytext=(xmin1-10, ymin1 + 300), bbox=bbox, arrowprops=arrowprops)
+#Rust
+plt.annotate('Min. value Rust\n%d Threads\n%.2f ms'%(xmin2, ymin2), (xmin2, ymin2), xytext=(xmin2+20, ymin2 + 300), bbox=bbox, arrowprops=arrowprops)
 plt.show()
