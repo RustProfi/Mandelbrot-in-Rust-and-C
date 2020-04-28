@@ -1,6 +1,5 @@
 pub mod customerror;
 pub mod mandel;
-pub mod measure;
 pub mod time;
 pub mod wcrossbeam;
 pub mod wrayon;

@@ -3,6 +3,8 @@ use crate::customerror::CustomError;
 use crate::mandel::{pixel_to_point, render, write_image};
 use crate::time::{Clock, MyTimestamp};
 use num::Complex;
+use std::fs::File;
+use std::io::prelude::*;
 
 ///Measure in ms how long it takes to compute an image of the mandelbrot set in parallel using
 //the crossbeam crate.
@@ -55,4 +57,30 @@ pub fn time_with_crossbeam(
         write_image("mandel.png", &pixels, bounds)?;
     }
     Ok(start.compute_time_millis(end))
+}
+
+///Measures for a given base and bounds how long it takes for every number of threads in a
+///range from 4 to 80 by repeating the measurement 20 times each. The results are written to a file.
+
+/// # Arguments
+///
+/// * `bounds` - The width and height of the image
+/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
+/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
+pub fn measure_workload_crossbeam(
+    bounds: (usize, usize),
+    upper_left: Complex<f64>,
+    lower_right: Complex<f64>,
+) -> Result<(), CustomError> {
+    let mut file = File::create("rust_crossbeam_performance.txt")?;
+
+    for thread_count in 4..=80 {
+        let mut time: f64 = 0.0;
+        for _ in 0..20 {
+            time += time_with_crossbeam(bounds, upper_left, lower_right, thread_count, false)?;
+        }
+        time /= 20.0;
+        file.write_fmt(format_args!("{},{}\n", thread_count, time))?;
+    }
+    Ok(())
 }

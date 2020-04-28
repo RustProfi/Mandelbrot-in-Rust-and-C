@@ -7,17 +7,13 @@ mod wrayon;
 mod wscopedthreadpool;
 mod wthreads;
 mod wthreadsunsafe;
-use mandelbrot::measure::{
-    measure_workload_crossbeam, measure_workload_rayon, measure_workload_scoped_threadpool,
-    measure_workload_threads, measure_workload_threads_unsafe,
-};
 use num::Complex;
 use std::process::exit;
-use wcrossbeam::time_with_crossbeam;
-use wrayon::time_with_rayon;
-use wscopedthreadpool::time_with_scoped_threadpool;
-use wthreads::time_threads;
-use wthreadsunsafe::time_threads_unsafe;
+use wthreads::{measure_workload_threads, time_threads};
+use wthreadsunsafe::{measure_workload_threads_unsafe, time_threads_unsafe};
+use wcrossbeam::{measure_workload_crossbeam, time_with_crossbeam};
+use wscopedthreadpool::{measure_workload_scoped_threadpool, time_with_scoped_threadpool};
+use wrayon::{measure_workload_rayon, time_with_rayon};
 
 static BOUNDS: (usize, usize) = (5000, 5000);
 static NTHREADS: usize = 50;
@@ -58,7 +54,7 @@ fn main() {
             }
         }
     }
-    
+
     if args.iter().any(|x| x.eq("threadsunsafe"))
         || args.iter().any(|x| x.eq("tu"))
         || args.iter().any(|x| x.eq("all"))
