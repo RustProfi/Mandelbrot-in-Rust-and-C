@@ -16,7 +16,7 @@ use std::io::prelude::*;
 /// * `lower_right` - The lower right point on the complex plane designating the area of the image.
 /// * `number_of_threads` - The number of threads and at the same time the number of chunks.
 /// * `draw` - Decides whether to write the computed mandelbrot set to png or not.
-pub fn time_with_crossbeam(
+pub fn time_crossbeam(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
@@ -78,7 +78,7 @@ pub fn measure_workload_crossbeam(
     for thread_count in 4..=80 {
         let mut time: f64 = 0.0;
         for _ in 0..20 {
-            time += time_with_crossbeam(bounds, upper_left, lower_right, thread_count, false)?;
+            time += time_crossbeam(bounds, upper_left, lower_right, thread_count, false)?;
         }
         time /= 20.0;
         file.write_fmt(format_args!("{},{}\n", thread_count, time))?;

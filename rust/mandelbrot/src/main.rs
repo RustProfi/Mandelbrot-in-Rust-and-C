@@ -9,9 +9,9 @@ mod wthreads;
 mod wthreadsunsafe;
 use num::Complex;
 use std::process::exit;
-use wcrossbeam::{measure_workload_crossbeam, time_with_crossbeam};
-use wrayon::{measure_workload_rayon, time_with_rayon};
-use wscopedthreadpool::{measure_workload_scoped_threadpool, time_with_scoped_threadpool};
+use wcrossbeam::{measure_workload_crossbeam, time_crossbeam};
+use wrayon::{measure_workload_rayon, time_rayon};
+use wscopedthreadpool::{measure_workload_scoped_threadpool, time_scoped_threadpool};
 use wthreads::{measure_workload_threads, time_threads};
 use wthreadsunsafe::{measure_workload_threads_unsafe, time_threads_unsafe};
 
@@ -26,7 +26,7 @@ static LOWER_RIGHT: Complex<f64> = Complex { re: 0.6, im: -1.2 };
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.len() == 1 || args.len() > 4 {
-        eprintln!("Usage: ./mandelbrot <Method> [args]");
+        eprintln!("Usage: mandelbrot <Method> [args]");
         eprintln!("Methods: threads|th, threadsunsafe|tu, crossbeam|cb, scoped_threadpool|st, rayon|ra, all>");
         eprintln!("args: -m (Performance measure)");
         std::process::exit(1);
@@ -91,7 +91,7 @@ fn main() {
                 }
             }
         } else {
-            match time_with_crossbeam(BOUNDS, UPPER_LEFT, LOWER_RIGHT, NTHREADS, DRAW) {
+            match time_crossbeam(BOUNDS, UPPER_LEFT, LOWER_RIGHT, NTHREADS, DRAW) {
                 Ok(time) => println!("Time with crossbeam: {}ms", time),
                 Err(e) => {
                     eprintln!("{}", e);
@@ -114,7 +114,7 @@ fn main() {
                 }
             }
         } else {
-            match time_with_scoped_threadpool(
+            match time_scoped_threadpool(
                 BOUNDS,
                 UPPER_LEFT,
                 LOWER_RIGHT,
@@ -144,7 +144,7 @@ fn main() {
                 }
             }
         } else {
-            match time_with_rayon(BOUNDS, UPPER_LEFT, LOWER_RIGHT, ROWS_PER_BAND, DRAW) {
+            match time_rayon(BOUNDS, UPPER_LEFT, LOWER_RIGHT, ROWS_PER_BAND, DRAW) {
                 Ok(time) => println!("Time with rayon: {}ms", time),
                 Err(e) => {
                     eprintln!("{}", e);

@@ -17,7 +17,7 @@ use std::io::prelude::*;
 /// * `lower_right` - The lower right point on the complex plane designating the area of the image.
 /// * `rows_per_band` - The number of rows per band.
 /// * `draw` - Decides whether to write the computed mandelbrot set to png or not.
-pub fn time_with_rayon(
+pub fn time_rayon(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
@@ -70,7 +70,7 @@ pub fn measure_workload_rayon(
     for rows_per_band in 1..=80 {
         let mut time: f64 = 0.0;
         for _ in 0..20 {
-            time += time_with_rayon(bounds, upper_left, lower_right, rows_per_band, false)?;
+            time += time_rayon(bounds, upper_left, lower_right, rows_per_band, false)?;
         }
         time /= 20.0;
         file.write_fmt(format_args!("{},{}\n", rows_per_band, time))?;

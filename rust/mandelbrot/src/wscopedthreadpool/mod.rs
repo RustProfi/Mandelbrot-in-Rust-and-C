@@ -18,7 +18,7 @@ use std::io::prelude::*;
 /// * `rows_per_band` - The number of rows per band.
 /// * `pool_size` - The number of threads the threadpool will be initialized with.
 /// * `draw` - Decides whether to write the computed mandelbrot set to png or not.
-pub fn time_with_scoped_threadpool(
+pub fn time_scoped_threadpool(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
@@ -76,7 +76,7 @@ pub fn measure_workload_scoped_threadpool(
     for rows_per_band in 1..=80 {
         let mut time: f64 = 0.0;
         for _ in 0..20 {
-            time += time_with_scoped_threadpool(
+            time += time_scoped_threadpool(
                 bounds,
                 upper_left,
                 lower_right,
