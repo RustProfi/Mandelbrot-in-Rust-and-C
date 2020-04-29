@@ -9,11 +9,11 @@ mod wthreads;
 mod wthreadsunsafe;
 use num::Complex;
 use std::process::exit;
+use wcrossbeam::{measure_workload_crossbeam, time_with_crossbeam};
+use wrayon::{measure_workload_rayon, time_with_rayon};
+use wscopedthreadpool::{measure_workload_scoped_threadpool, time_with_scoped_threadpool};
 use wthreads::{measure_workload_threads, time_threads};
 use wthreadsunsafe::{measure_workload_threads_unsafe, time_threads_unsafe};
-use wcrossbeam::{measure_workload_crossbeam, time_with_crossbeam};
-use wscopedthreadpool::{measure_workload_scoped_threadpool, time_with_scoped_threadpool};
-use wrayon::{measure_workload_rayon, time_with_rayon};
 
 static BOUNDS: (usize, usize) = (5000, 5000);
 static NTHREADS: usize = 50;

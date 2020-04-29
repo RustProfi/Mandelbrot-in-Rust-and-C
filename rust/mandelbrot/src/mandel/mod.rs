@@ -2,7 +2,7 @@ extern crate image;
 extern crate num;
 
 use crate::customerror::CustomError;
-use crate::wthreadsunsafe::Wrapper;
+use crate::wthreadsunsafe::WrappedUnsafeCell;
 use image::png::PNGEncoder;
 use image::ColorType;
 use num::Complex;
@@ -12,14 +12,17 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 /// Try to determine if `c` is in the Mandelbrot set, using at most 256
-/// iterations to decide due to the color spectrum of the Png Writer. For
-/// a more precise estimation this value must be increased.
+/// iterations due to the grayscale color spectrum of the Png Writer.
 ///
 /// If `c` is not a member, return `Some(i)`, where `i` is the number of
 /// iterations it took for `c` to leave the circle of radius two centered on the
 /// origin. If `c` seems to be a member (more precisely, if we reached the
 /// iteration limit without being able to prove that `c` is not a member),
 /// return `None`.
+
+/// # Arguments
+///
+/// * `c` - A complex number to be determined if it is in the mandelbrot set or not.
 fn escape_mandel_iterations(c: Complex<f64>) -> Option<u32> {
     let mut z = Complex { re: 0.0, im: 0.0 };
     for i in 0..256 {
@@ -33,11 +36,13 @@ fn escape_mandel_iterations(c: Complex<f64>) -> Option<u32> {
 
 /// Given the row and column of a pixel in the output image, return the
 /// corresponding point on the complex plane.
+
+/// # Arguments
 ///
-/// `bounds` is a pair giving the width and height of the image in pixels.
-/// `pixel` is a (column, row) pair indicating a particular pixel in that image.
-/// The `upper_left` and `lower_right` parameters are points on the complex
-/// plane designating the area our image covers.
+/// * `bounds` - A pair giving the width and height of the image in pixels.
+/// * `pixel` - A (column, row) pair indicating a particular pixel in that image.
+/// * `upper_left` - The upper left point on the complex plane designating the area of the image.
+/// * `lower_right` - The lower right point on the complex plane designating the area of the image.
 pub fn pixel_to_point(
     bounds: (usize, usize),
     pixel: (usize, usize),
@@ -56,17 +61,13 @@ pub fn pixel_to_point(
 }
 
 ///Render a rectangle of the Mandelbrot set into a buffer of pixels.
-///The `bounds` argument gives the width and height of the buffer `pixels`,
-///which holds one grayscale pixel per byte. The `upper_left` and `lower_right`
-///arguments specify points on the complex plane corresponding to the upper-
-///left and lower-right corners of the pixel buffer.
 
 /// # Arguments
 ///
-/// * `pixels` - A buffer or a chunk.
-/// * `bounds` - A tuple which holds the bounds of the image.
-/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
-/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
+/// * `pixels` - A buffer with the length of the number of pixels of the image.
+/// * `bounds` - A pair giving the width and height of the image in pixels.
+/// * `upper_left` - The upper left point on the complex plane designating the area of the image.
+/// * `lower_right` - The lower right point on the complex plane designating the area of the image.
 
 pub fn render(
     pixels: &mut [u8],
@@ -91,22 +92,18 @@ pub fn render(
     Ok(())
 }
 
-///A modification of the render function. In case of normal threads without a scope
-//(eg. a scoped threadpool) it is
-///necessary to use an Arc that it can be safely shared between threads.
-///Arc only provides an immutable reference, hence a Mutex is neccessray for mutual access.
-///The bounds in combination with the offset argument defines which part of the buffer will
-///be rendered. The `upper_left` and `lower_right`
-///arguments specify points on the complex plane corresponding to the upper-
-///left and lower-right corners of the bounds.
+///Render a rectangle of the Mandelbrot set into a buffer of pixels.
+///
+///This is a modification of the render function that can be used safely between threads without
+///having to use an external crate which provides a scope environment.
 
 /// # Arguments
 ///
-/// * `pixels` - An Arc which holds a Mutex which holds the buffer.
+/// * `pixels` - A buffer with the length of the number of pixels of the image.
 /// * `offset` - An offset which specify which part of buffer will be mutated.
-/// * `bounds` - Specifies which part will be rendered.
-/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
-/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
+/// * `bounds` - A pair giving the width and height of the image in pixels.
+/// * `upper_left` - The upper left point on the complex plane designating the area of the image.
+/// * `lower_right` - The lower right point on the complex plane designating the area of the image.
 pub fn render_threads(
     pixels: Arc<Mutex<Vec<u8>>>,
     offset: usize,
@@ -121,35 +118,34 @@ pub fn render_threads(
     for row in 0..bounds.1 {
         for column in 0..bounds.0 {
             let point = pixel_to_point(bounds, (column, row), upper_left, lower_right);
-            pixels.lock().unwrap()[offset + (row * bounds.0 + column)] =
-                match escape_mandel_iterations(point) {
-                    None => 0,
-                    Some(count) => 255 - count as u8,
-                };
+            let iterations = match escape_mandel_iterations(point) {
+                None => 0,
+                Some(count) => 255 - count as u8,
+            };
+
+            //Assuming no thread will panic
+            let mut guard = pixels.lock().unwrap();
+            guard[offset + (row * bounds.0 + column)] = iterations;
         }
     }
     Ok(())
 }
 
-///A modification of the render_fork_join function.
-///Since Mutex is slow this is a very unsafe buildaround. It is safe to use ONLY if each element
-///of the Vector will be written by only one thread! Otherwise a race condition can occur!
-///In addition there is no guarantee, that the pointer outlives the function!
-///The bounds in combination with the offset argument defines which part of the buffer will
-///be rendered. The `upper_left` and `lower_right`
-///arguments specify points on the complex plane corresponding to the upper-
-///left and lower-right corners of the bounds.
+///Render a rectangle of the Mandelbrot set into a buffer of pixels.
+///
+///This is a modification of the render function that can be used safely between threads without
+///having to use an external crate which provides a scope environment. In Addititon this function
+///uses unsafe code so no locking mechanism is used.
 
 /// # Arguments
 ///
-/// * `pixels` - An Arc which holds a Wrapper around an UnsafeCell which holds an Raw Pointer
-///to the vector.
+/// * `pixels` - A buffer with the length of the number of pixels of the image.
 /// * `offset` - An offset which specify which part of buffer will be mutated.
-/// * `bounds` - Specifies which part will be rendered.
-/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
-/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
+/// * `bounds` - A pair giving the width and height of the image in pixels.
+/// * `upper_left` - The upper left point on the complex plane designating the area of the image.
+/// * `lower_right` - The lower right point on the complex plane designating the area of the image.
 pub fn render_threads_unsafe(
-    pixels: Arc<Wrapper<*mut u8>>,
+    pixels: Arc<WrappedUnsafeCell<*mut u8>>,
     offset: usize,
     bounds: (usize, usize),
     upper_left: Complex<f64>,
@@ -184,7 +180,7 @@ pub fn render_threads_unsafe(
 /// # Arguments
 ///
 /// * `filename` - The name of the image which will be created.
-/// * `pixels` - A filled buffer of pixels.
+/// * `pixels` - A filled buffer of pixels per byte in grayscale.
 /// * `bounds` - The dimensions of the image.
 pub fn write_image(
     filename: &str,

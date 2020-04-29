@@ -12,16 +12,18 @@ use std::io::prelude::*;
 
 /// # Arguments
 ///
-/// * `bounds` - The length and width of the image
-/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
-/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
+/// * `bounds` - A pair giving the width and height of the image in pixels.
+/// * `upper_left` - The upper left point on the complex plane designating the area of the image.
+/// * `lower_right` - The lower right point on the complex plane designating the area of the image.
 /// * `rows_per_band` - The number of rows per band.
+/// * `pool_size` - The number of threads the threadpool will be initialized with.
+/// * `draw` - Decides whether to write the computed mandelbrot set to png or not.
 pub fn time_with_scoped_threadpool(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
     rows_per_band: usize,
-    number_of_threads: u32,
+    pool_size: u32,
     draw: bool,
 ) -> Result<f64, CustomError> {
     let mut pixels = vec![0; bounds.0 * bounds.1];
@@ -32,7 +34,7 @@ pub fn time_with_scoped_threadpool(
     let mut end = MyTimestamp::new();
 
     start.gettime(Clock::ClockMonotonicRaw)?;
-    let mut pool = Pool::new(number_of_threads);
+    let mut pool = Pool::new(pool_size);
     pool.scoped(|scope| {
         for (i, band) in bands.into_iter().enumerate() {
             let top = rows_per_band * i;
@@ -59,15 +61,15 @@ pub fn time_with_scoped_threadpool(
 
 /// # Arguments
 ///
-/// * `bounds` - The width and height of the image
-/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
-/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
-/// * `number_of_threads` - The number of threads the threadpool will be initialized with
+/// * `bounds` - A pair giving the width and height of the image in pixels.
+/// * `upper_left` - The upper left point on the complex plane designating the area of the image.
+/// * `lower_right` - The lower right point on the complex plane designating the area of the image.
+/// * `pool_size` - The number of threads the threadpool will be initialized with.
 pub fn measure_workload_scoped_threadpool(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
-    number_of_threads: u32,
+    pool_size: u32,
 ) -> Result<(), CustomError> {
     let mut file = File::create("rust_scoped_threadpool_performance.txt")?;
 
@@ -79,7 +81,7 @@ pub fn measure_workload_scoped_threadpool(
                 upper_left,
                 lower_right,
                 rows_per_band,
-                number_of_threads,
+                pool_size,
                 false,
             )?;
         }

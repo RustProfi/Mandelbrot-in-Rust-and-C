@@ -11,10 +11,11 @@ use std::io::prelude::*;
 
 /// # Arguments
 ///
-/// * `bounds` - The width and height of the image
-/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
-/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
+/// * `bounds` - A pair giving the width and height of the image in pixels.
+/// * `upper_left` - The upper left point on the complex plane designating the area of the image.
+/// * `lower_right` - The lower right point on the complex plane designating the area of the image.
 /// * `number_of_threads` - The number of threads and at the same time the number of chunks.
+/// * `draw` - Decides whether to write the computed mandelbrot set to png or not.
 pub fn time_with_crossbeam(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
@@ -64,9 +65,9 @@ pub fn time_with_crossbeam(
 
 /// # Arguments
 ///
-/// * `bounds` - The width and height of the image
-/// * `upper_left` - A Complex Number specifying the upper_left point on the complex lane.
-/// * `lower_right` - A Complex Number specifying the lower_right point on the complex lane.
+/// * `bounds` - A pair giving the width and height of the image in pixels.
+/// * `upper_left` - The upper left point on the complex plane designating the area of the image.
+/// * `lower_right` - The lower right point on the complex plane designating the area of the image.
 pub fn measure_workload_crossbeam(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
