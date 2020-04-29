@@ -96,3 +96,34 @@ freepixels:
         free(pixels);
         return retval;
 }
+
+int measure_workload_threadpool(int width, int height, double complex upper_left, double complex lower_right, int pool_size) {
+        FILE *fp;
+        fp = fopen("c_threadpool_performance.txt", "w");
+        if (!fp) {
+                perror("Could not open file \"c_threadpool_performance.txt\"");
+                return -1;
+        }
+
+        for(int rows_per_band = 1; rows_per_band <= 80; rows_per_band++) {
+                double time = 0;
+                for(int i = 0; i < 20; i++) {
+                        double res = time_threadpool(width, height, upper_left, lower_right, rows_per_band, pool_size, 0);
+                        if(res == -1.0) {
+                                perror("time with threadpool failed");
+                                return -1;
+                        }
+                        time += res;
+                }
+                time /= 20;
+
+                int printed = fprintf(fp, "%d,%f\n", rows_per_band, time);
+                if(printed == 0) {
+                        perror("Write to file failed");
+                        return -1;
+                }
+        }
+        fclose(fp);
+
+        return 0;
+}

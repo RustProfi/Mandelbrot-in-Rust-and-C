@@ -12,7 +12,6 @@ static int WIDTH = 5000;
 static int HEIGHT = 5000;
 static int NTHREADS = 50;
 static int DRAW = 1;
-static int NOTDRAW = 0;
 static double complex UPPER_LEFT = -1.6 + 1.2 * I;
 static double complex LOWER_RIGHT = 0.6 - 1.2 * I;
 
@@ -32,27 +31,11 @@ int main(int argc, char *argv[]) {
         //Runs 20x for each thread_count.
         if(!strcmp(argv[1], "threads") || !strcmp(argv[1], "th") || !strcmp(argv[1], "all")) {
                 if(argv[2] != NULL && !strcmp(argv[2], "-m")) {
-                        FILE *fp;
-                        fp = fopen("c_threads_performance.txt", "w");
-                        if (!fp) {
-                                perror("Could not open file for writing");
+                        if(measure_workload_threads(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT) == -1) {
+                                perror("measure workload with threads failed");
                                 exit(EXIT_FAILURE);
                         }
-
-                        for(int thread_count = 4; thread_count <= 80; thread_count++) {
-                                double time = 0;
-                                for(int i = 0; i < 20; i++) {
-                                        double res = time_threads(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, thread_count, NOTDRAW);
-                                        if(res == -1.0) {
-                                                perror("time with threads failed");
-                                                exit(EXIT_FAILURE);
-                                        }
-                                        time += res;
-                                }
-                                time /= 20;
-                                fprintf(fp, "%d,%f\n", thread_count, time);
-                        }
-                        fclose(fp);
+                        printf("Workload measure with threading complete!\n");
                 }
                 else {
                         double res = time_threads(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, NTHREADS, DRAW);
@@ -70,27 +53,11 @@ int main(int argc, char *argv[]) {
         //Threadpool always with 8 threads.
         if(!strcmp(argv[1], "threadpool") || !strcmp(argv[1], "tp") || !strcmp(argv[1], "all")) {
                 if(argv[2] != NULL && !strcmp(argv[2], "-m")) {
-                        FILE *fp;
-                        fp = fopen("c_threadpool_performance.txt", "w");
-                        if (!fp) {
-                                perror("Could not open file for writing");
+                        if(measure_workload_threadpool(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 8) == -1) {
+                                perror("measure workload with threadpool failed");
                                 exit(EXIT_FAILURE);
                         }
-
-                        for(int rows_per_band = 1; rows_per_band <= 80; rows_per_band++) {
-                                double time = 0;
-                                for(int i = 0; i < 20; i++) {
-                                        double res = time_threadpool(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, rows_per_band, 8, NOTDRAW);
-                                        if(res == -1.0) {
-                                                perror("time with threadpool failed");
-                                                exit(EXIT_FAILURE);
-                                        }
-                                        time += res;
-                                }
-                                time /= 20;
-                                fprintf(fp, "%d,%f\n", rows_per_band, time);
-                        }
-                        fclose(fp);
+                        printf("Workload measure with threadpool complete!\n");
                 }
                 else {
                         double res = time_threadpool(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 1, 8, DRAW);
@@ -107,27 +74,11 @@ int main(int argc, char *argv[]) {
         //Runs 20x for each thread_count.
         if(!strcmp(argv[1], "openmp") || !strcmp(argv[1], "op") || !strcmp(argv[1], "all")) {
                 if(argv[2] != NULL && !strcmp(argv[2], "-m")) {
-                        FILE *fp;
-                        fp = fopen("c_openmp_performance.txt", "w");
-                        if (!fp) {
-                                perror("Could not open file for writing");
+                        if(measure_workload_openmp(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 1) == -1) {
+                                perror("measure workload with openmp failed");
                                 exit(EXIT_FAILURE);
                         }
-
-                        for(int thread_count = 4; thread_count <= 80; thread_count++) {
-                                double time = 0;
-                                for(int i = 0; i < 20; i++) {
-                                        double res = time_openmp(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 1, thread_count, NOTDRAW);
-                                        if(res == -1.0) {
-                                                perror("time with openmp failed");
-                                                exit(EXIT_FAILURE);
-                                        }
-                                        time += res;
-                                }
-                                time /= 20;
-                                fprintf(fp, "%d,%f\n", thread_count, time);
-                        }
-                        fclose(fp);
+                        printf("Workload measure with openmp complete!\n");
                 }
                 else {
                         double res = time_openmp(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 1, NTHREADS, DRAW);

@@ -27,8 +27,8 @@ int escape_mandel_iterations(double complex c) {
 }
 
 double complex pixel_to_point(int width, int height,
-                               int p_colum, int p_row, double complex upper_left,
-                               double complex lower_right) {
+                              int p_colum, int p_row, double complex upper_left,
+                              double complex lower_right) {
         double c_width = creal(lower_right) - creal(upper_left);
         double c_height = cimag(upper_left) - cimag(lower_right);
 

@@ -96,3 +96,34 @@ freepixels:
         free(pixels);
         return retval;
 }
+
+int measure_workload_threads(int width, int height, double complex upper_left, double complex lower_right) {
+        FILE *fp;
+        fp = fopen("c_threads_performance.txt", "w");
+        if (!fp) {
+                perror("Could not open file for writing \"c_threads_performance.txt\"");
+                return -1;
+        }
+
+        for(int thread_count = 4; thread_count <= 80; thread_count++) {
+                double time = 0;
+                for(int i = 0; i < 20; i++) {
+                        double res = time_threads(width, height, upper_left, lower_right, thread_count, 0);
+                        if(res == -1.0) {
+                                perror("time with threads failed");
+                                return -1;
+                        }
+                        time += res;
+                }
+                time /= 20;
+
+                int printed = fprintf(fp, "%d,%f\n", thread_count, time);
+                if(printed == 0) {
+                        perror("Write to file failed");
+                        return -1;
+                }
+        }
+        fclose(fp);
+
+        return 0;
+}

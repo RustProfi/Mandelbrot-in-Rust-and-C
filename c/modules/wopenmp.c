@@ -63,3 +63,33 @@ freepixels:
         free(pixels);
         return retval;
 }
+
+int measure_workload_openmp(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band) {
+        FILE *fp;
+        fp = fopen("c_openmp_performance.txt", "w");
+        if (!fp) {
+                perror("Could not open file \"c_openmp_performance.txt\"");
+                return -1;
+        }
+
+        for(int thread_count = 4; thread_count <= 80; thread_count++) {
+                double time = 0;
+                for(int i = 0; i < 20; i++) {
+                        double res = time_openmp(width, height, upper_left, lower_right, rows_per_band, thread_count, 0);
+                        if(res == -1.0) {
+                                perror("time with openmp failed");
+                                return -1;
+                        }
+                        time += res;
+                }
+                time /= 20;
+                int printed = fprintf(fp, "%d,%f\n", thread_count, time);
+                if(printed == 0) {
+                        perror("Write to file failed");
+                        return -1;
+                }
+        }
+        fclose(fp);
+
+        return 0;
+}
