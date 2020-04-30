@@ -1,6 +1,3 @@
-extern crate image;
-extern crate num;
-
 use crate::customerror::CustomError;
 use crate::wthreadsunsafe::WrappedUnsafeCell;
 use image::png::PNGEncoder;

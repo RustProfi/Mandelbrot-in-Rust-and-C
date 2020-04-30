@@ -1,43 +1,25 @@
-extern crate num;
-mod customerror;
-mod mandel;
-mod time;
-mod wcrossbeam;
-mod wrayon;
-mod wscopedthreadpool;
-mod wthreads;
-mod wthreadsunsafe;
-use num::Complex;
 use std::process::exit;
-use wcrossbeam::{measure_workload_crossbeam, time_crossbeam};
-use wrayon::{measure_workload_rayon, time_rayon};
-use wscopedthreadpool::{measure_workload_scoped_threadpool, time_scoped_threadpool};
-use wthreads::{measure_workload_threads, time_threads};
-use wthreadsunsafe::{measure_workload_threads_unsafe, time_threads_unsafe};
-
-static BOUNDS: (usize, usize) = (5000, 5000);
-static NTHREADS: usize = 50;
-static ROWS_PER_BAND: usize = 5;
-static DRAW: bool = true;
-static UPPER_LEFT: Complex<f64> = Complex { re: -1.6, im: 1.2 };
-static LOWER_RIGHT: Complex<f64> = Complex { re: 0.6, im: -1.2 };
+use mandelbrot::parseargs::{parsearguments};
+use mandelbrot::wcrossbeam::{measure_workload_crossbeam, time_crossbeam};
+use mandelbrot::wrayon::{measure_workload_rayon, time_rayon};
+use mandelbrot::wscopedthreadpool::{measure_workload_scoped_threadpool, time_scoped_threadpool};
+use mandelbrot::wthreads::{measure_workload_threads, time_threads};
+use mandelbrot::wthreadsunsafe::{measure_workload_threads_unsafe, time_threads_unsafe};
 
 ///A basic tui with error handling
 fn main() {
-    let args: Vec<String> = std::env::args().collect();
-    if args.len() == 1 || args.len() > 4 {
-        eprintln!("Usage: mandelbrot <Method> [args]");
-        eprintln!("Methods: threads|th, threadsunsafe|tu, crossbeam|cb, scoped_threadpool|st, rayon|ra, all>");
-        eprintln!("args: -m (Performance measure)");
-        std::process::exit(1);
-    }
 
-    if args.iter().any(|x| x.eq("threads"))
-        || args.iter().any(|x| x.eq("th"))
-        || args.iter().any(|x| x.eq("all"))
-    {
-        if args.iter().any(|x| x.eq("-m")) {
-            match measure_workload_threads(BOUNDS, UPPER_LEFT, LOWER_RIGHT) {
+    let args = match parsearguments() {
+        Ok(k) => k,
+        Err(err) => {
+            println!("{}", err);
+            std::process::exit(1);
+        }
+    };
+
+    if args.mechanism.eq("threads") || args.mechanism.eq("th") || args.mechanism.eq("all") {
+        if args.measure {
+            match measure_workload_threads(args.bounds, args.upper_left, args.lower_right) {
                 Ok(_) => println!("Workload measure with threading complete!"),
                 Err(e) => {
                     eprintln!("{}", e);
@@ -45,7 +27,7 @@ fn main() {
                 }
             }
         } else {
-            match time_threads(BOUNDS, UPPER_LEFT, LOWER_RIGHT, NTHREADS, DRAW) {
+            match time_threads(args.bounds, args.upper_left, args.lower_right, args.threads, args.draw) {
                 Ok(time) => println!("Time with threading: {}ms", time),
                 Err(e) => {
                     eprintln!("{}", e);
@@ -55,12 +37,9 @@ fn main() {
         }
     }
 
-    if args.iter().any(|x| x.eq("threadsunsafe"))
-        || args.iter().any(|x| x.eq("tu"))
-        || args.iter().any(|x| x.eq("all"))
-    {
-        if args.iter().any(|x| x.eq("-m")) {
-            match measure_workload_threads_unsafe(BOUNDS, UPPER_LEFT, LOWER_RIGHT) {
+    if args.mechanism.eq("threadsunsafe") || args.mechanism.eq("tu") || args.mechanism.eq("all") {
+        if args.measure {
+            match measure_workload_threads_unsafe(args.bounds, args.upper_left, args.lower_right) {
                 Ok(_) => println!("Workload measure with threading unsafe complete!"),
                 Err(e) => {
                     eprintln!("{}", e);
@@ -68,7 +47,7 @@ fn main() {
                 }
             }
         } else {
-            match time_threads_unsafe(BOUNDS, UPPER_LEFT, LOWER_RIGHT, NTHREADS, DRAW) {
+            match time_threads_unsafe(args.bounds, args.upper_left, args.lower_right, args.threads, args.draw) {
                 Ok(time) => println!("Time with threading unsafe: {}ms", time),
                 Err(e) => {
                     eprintln!("{}", e);
@@ -78,12 +57,9 @@ fn main() {
         }
     }
 
-    if args.iter().any(|x| x.eq("crossbeam"))
-        || args.iter().any(|x| x.eq("cb"))
-        || args.iter().any(|x| x.eq("all"))
-    {
-        if args.iter().any(|x| x.eq("-m")) {
-            match measure_workload_crossbeam(BOUNDS, UPPER_LEFT, LOWER_RIGHT) {
+    if args.mechanism.eq("crossbeam") || args.mechanism.eq("cb") || args.mechanism.eq("all") {
+        if args.measure {
+            match measure_workload_crossbeam(args.bounds, args.upper_left, args.lower_right) {
                 Ok(_) => println!("Workload measure with crossbeam complete!"),
                 Err(e) => {
                     eprintln!("{}", e);
@@ -91,7 +67,7 @@ fn main() {
                 }
             }
         } else {
-            match time_crossbeam(BOUNDS, UPPER_LEFT, LOWER_RIGHT, NTHREADS, DRAW) {
+            match time_crossbeam(args.bounds, args.upper_left, args.lower_right, args.threads, args.draw) {
                 Ok(time) => println!("Time with crossbeam: {}ms", time),
                 Err(e) => {
                     eprintln!("{}", e);
@@ -101,12 +77,9 @@ fn main() {
         }
     }
 
-    if args.iter().any(|x| x.eq("scoped_threadpool"))
-        || args.iter().any(|x| x.eq("st"))
-        || args.iter().any(|x| x.eq("all"))
-    {
-        if args.iter().any(|x| x.eq("-m")) {
-            match measure_workload_scoped_threadpool(BOUNDS, UPPER_LEFT, LOWER_RIGHT, 8) {
+    if args.mechanism.eq("scoped_threadpool") ||args. mechanism.eq("st") || args.mechanism.eq("all") {
+        if args.measure {
+            match measure_workload_scoped_threadpool(args.bounds, args.upper_left, args.lower_right, args.threads) {
                 Ok(_) => println!("Workload measure with scoped_threadpool complete!"),
                 Err(e) => {
                     eprintln!("{}", e);
@@ -114,14 +87,7 @@ fn main() {
                 }
             }
         } else {
-            match time_scoped_threadpool(
-                BOUNDS,
-                UPPER_LEFT,
-                LOWER_RIGHT,
-                ROWS_PER_BAND,
-                8,
-                DRAW,
-            ) {
+            match time_scoped_threadpool(args.bounds, args.upper_left, args.lower_right, args.rows_per_band, args.threads, args.draw) {
                 Ok(time) => println!("Time with scoped_threadpool: {}ms", time),
                 Err(e) => {
                     eprintln!("{}", e);
@@ -131,12 +97,9 @@ fn main() {
         }
     }
 
-    if args.iter().any(|x| x.eq("rayon"))
-        || args.iter().any(|x| x.eq("ra"))
-        || args.iter().any(|x| x.eq("all"))
-    {
-        if args.iter().any(|x| x.eq("-m")) {
-            match measure_workload_rayon(BOUNDS, UPPER_LEFT, LOWER_RIGHT) {
+    if args.mechanism.eq("rayon") || args.mechanism.eq("ra") ||args. mechanism.eq("all") {
+        if args.measure {
+            match measure_workload_rayon(args.bounds, args.upper_left, args.lower_right) {
                 Ok(_) => println!("Workload measure with rayon complete!"),
                 Err(e) => {
                     eprintln!("{}", e);
@@ -144,7 +107,7 @@ fn main() {
                 }
             }
         } else {
-            match time_rayon(BOUNDS, UPPER_LEFT, LOWER_RIGHT, ROWS_PER_BAND, DRAW) {
+            match time_rayon(args.bounds, args.upper_left, args.lower_right, args.rows_per_band, args.draw) {
                 Ok(time) => println!("Time with rayon: {}ms", time),
                 Err(e) => {
                     eprintln!("{}", e);

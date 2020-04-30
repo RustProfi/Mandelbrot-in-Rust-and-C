@@ -1,11 +1,11 @@
-extern crate image;
 use std::fmt;
 
 ///A Customerror which implements selfmade error types and a wrapper around existing error types.
 pub enum CustomError {
-    UnfittingArray,
     IoError(std::io::Error),
     ImageError(image::ImageError),
+    ParseIntErr(std::num::ParseIntError),
+    UnfittingArray,
     TimerError,
     ThreadPanic,
     CrossbeamError,
@@ -14,9 +14,10 @@ pub enum CustomError {
 impl fmt::Display for CustomError {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         match *self {
-            CustomError::UnfittingArray => write!(f, "Array size is to small for bounds."),
             CustomError::IoError(ref e) => write!(f, "{}", e),
             CustomError::ImageError(ref e) => write!(f, "{}", e),
+            CustomError::ParseIntErr(ref e) => write!(f, "{}", e),
+            CustomError::UnfittingArray => write!(f, "Array size is to small for bounds."),
             CustomError::TimerError => write!(f, "Unsafe C Timer threw an error"),
             CustomError::ThreadPanic => write!(f, "Thread paniced"),
             CustomError::CrossbeamError => write!(f, "Crossbeam child threads paniced"),
@@ -27,9 +28,10 @@ impl fmt::Display for CustomError {
 impl fmt::Debug for CustomError {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         match *self {
-            CustomError::UnfittingArray => write!(f, "Array size is to small for bounds."),
             CustomError::IoError(ref e) => write!(f, "{}", e),
             CustomError::ImageError(ref e) => write!(f, "{}", e),
+            CustomError::ParseIntErr(ref e) => write!(f, "{}", e),
+            CustomError::UnfittingArray => write!(f, "Array size is to small for bounds."),
             CustomError::TimerError => write!(f, "Unsafe C Timer threw an error"),
             CustomError::ThreadPanic => write!(f, "Thread paniced"),
             CustomError::CrossbeamError => write!(f, "Crossbeam child threads paniced"),
@@ -46,6 +48,12 @@ impl From<std::io::Error> for CustomError {
 impl From<image::ImageError> for CustomError {
     fn from(error: image::ImageError) -> Self {
         CustomError::ImageError(error)
+    }
+}
+
+impl From<std::num::ParseIntError> for CustomError {
+    fn from(error: std::num::ParseIntError) -> Self {
+        CustomError::ParseIntErr(error)
     }
 }
 

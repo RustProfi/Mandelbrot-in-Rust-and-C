@@ -1,4 +1,3 @@
-extern crate libc;
 use crate::customerror::CustomError;
 use libc::c_int;
 use libc::timespec;

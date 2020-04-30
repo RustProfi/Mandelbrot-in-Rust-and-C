@@ -11,7 +11,12 @@ libc = "0.2.68"
 crossbeam = "0.7.3"
 scoped_threadpool = "0.1.9"
 rayon = "1.3.0"
+clap = "2.33.0"
 
 [[bin]]
 name ="mandelbrot"
 doc = true
+
+[lib]
+name = "mandelbrot"
+path = "src/lib.rs"

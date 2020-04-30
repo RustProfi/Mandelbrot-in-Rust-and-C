@@ -1,4 +1,3 @@
-extern crate rayon;
 use crate::customerror::CustomError;
 use crate::mandel::{pixel_to_point, render, write_image};
 use crate::time::{Clock, MyTimestamp};

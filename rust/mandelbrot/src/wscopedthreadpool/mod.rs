@@ -1,4 +1,3 @@
-extern crate scoped_threadpool;
 use crate::customerror::CustomError;
 use crate::mandel::{pixel_to_point, render, write_image};
 use crate::time::{Clock, MyTimestamp};
@@ -23,7 +22,7 @@ pub fn time_scoped_threadpool(
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
     rows_per_band: usize,
-    pool_size: u32,
+    pool_size: usize,
     draw: bool,
 ) -> Result<f64, CustomError> {
     let mut pixels = vec![0; bounds.0 * bounds.1];
@@ -34,7 +33,7 @@ pub fn time_scoped_threadpool(
     let mut end = MyTimestamp::new();
 
     start.gettime(Clock::ClockMonotonicRaw)?;
-    let mut pool = Pool::new(pool_size);
+    let mut pool = Pool::new(pool_size as u32);
     pool.scoped(|scope| {
         for (i, band) in bands.into_iter().enumerate() {
             let top = rows_per_band * i;
@@ -69,7 +68,7 @@ pub fn measure_workload_scoped_threadpool(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
-    pool_size: u32,
+    pool_size: usize,
 ) -> Result<(), CustomError> {
     let mut file = File::create("rust_scoped_threadpool_performance.txt")?;
 
