@@ -4,11 +4,13 @@ use std::fmt;
 pub enum CustomError {
     IoError(std::io::Error),
     ImageError(image::ImageError),
-    ParseIntErr(std::num::ParseIntError),
+    ParseIntError(std::num::ParseIntError),
+    ParseFloatError(std::num::ParseFloatError),
     UnfittingArray,
     TimerError,
     ThreadPanic,
     CrossbeamError,
+    InvalidArgument,
 }
 
 impl fmt::Display for CustomError {
@@ -16,11 +18,16 @@ impl fmt::Display for CustomError {
         match *self {
             CustomError::IoError(ref e) => write!(f, "{}", e),
             CustomError::ImageError(ref e) => write!(f, "{}", e),
-            CustomError::ParseIntErr(ref e) => write!(f, "{}", e),
+            CustomError::ParseIntError(ref e) => write!(f, "{}", e),
+            CustomError::ParseFloatError(ref e) => write!(f, "{}", e),
             CustomError::UnfittingArray => write!(f, "Array size is to small for bounds."),
             CustomError::TimerError => write!(f, "Unsafe C Timer threw an error"),
             CustomError::ThreadPanic => write!(f, "Thread paniced"),
             CustomError::CrossbeamError => write!(f, "Crossbeam child threads paniced"),
+            CustomError::InvalidArgument => write!(
+                f,
+                "Invalid Argument. Rerun with --help for more Information."
+            ),
         }
     }
 }
@@ -30,11 +37,16 @@ impl fmt::Debug for CustomError {
         match *self {
             CustomError::IoError(ref e) => write!(f, "{}", e),
             CustomError::ImageError(ref e) => write!(f, "{}", e),
-            CustomError::ParseIntErr(ref e) => write!(f, "{}", e),
+            CustomError::ParseIntError(ref e) => write!(f, "{}", e),
+            CustomError::ParseFloatError(ref e) => write!(f, "{}", e),
             CustomError::UnfittingArray => write!(f, "Array size is to small for bounds."),
             CustomError::TimerError => write!(f, "Unsafe C Timer threw an error"),
             CustomError::ThreadPanic => write!(f, "Thread paniced"),
             CustomError::CrossbeamError => write!(f, "Crossbeam child threads paniced"),
+            CustomError::InvalidArgument => write!(
+                f,
+                "Invalid Argument. Rerun with --help for more Information."
+            ),
         }
     }
 }
@@ -53,7 +65,13 @@ impl From<image::ImageError> for CustomError {
 
 impl From<std::num::ParseIntError> for CustomError {
     fn from(error: std::num::ParseIntError) -> Self {
-        CustomError::ParseIntErr(error)
+        CustomError::ParseIntError(error)
+    }
+}
+
+impl From<std::num::ParseFloatError> for CustomError {
+    fn from(error: std::num::ParseFloatError) -> Self {
+        CustomError::ParseFloatError(error)
     }
 }
 

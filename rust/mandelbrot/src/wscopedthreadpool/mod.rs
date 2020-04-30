@@ -64,11 +64,13 @@ pub fn time_scoped_threadpool(
 /// * `upper_left` - The upper left point on the complex plane designating the area of the image.
 /// * `lower_right` - The lower right point on the complex plane designating the area of the image.
 /// * `pool_size` - The number of threads the threadpool will be initialized with.
+/// * `draw` - Decides whether to write the computed mandelbrot set to png or not.
 pub fn measure_workload_scoped_threadpool(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
     pool_size: usize,
+    draw: bool,
 ) -> Result<(), CustomError> {
     let mut file = File::create("rust_scoped_threadpool_performance.txt")?;
 
@@ -81,7 +83,7 @@ pub fn measure_workload_scoped_threadpool(
                 lower_right,
                 rows_per_band,
                 pool_size,
-                false,
+                draw,
             )?;
         }
         time /= 20.0;

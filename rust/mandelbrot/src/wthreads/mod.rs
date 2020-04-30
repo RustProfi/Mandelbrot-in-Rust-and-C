@@ -90,17 +90,19 @@ pub fn time_threads(
 /// * `bounds` - A pair giving the width and height of the image in pixels.
 /// * `upper_left` - The upper left point on the complex plane designating the area of the image.
 /// * `lower_right` - The lower right point on the complex plane designating the area of the image.
+/// * `draw` - Decides whether to write the computed mandelbrot set to png or not.
 pub fn measure_workload_threads(
     bounds: (usize, usize),
     upper_left: Complex<f64>,
     lower_right: Complex<f64>,
+    draw: bool,
 ) -> Result<(), CustomError> {
     let mut file = File::create("rust_threads_performance.txt")?;
 
     for thread_count in 4..=80 {
         let mut time: f64 = 0.0;
         for _ in 0..20 {
-            time += time_threads(bounds, upper_left, lower_right, thread_count, false)?;
+            time += time_threads(bounds, upper_left, lower_right, thread_count, draw)?;
         }
         time /= 20.0;
         file.write_fmt(format_args!("{},{}\n", thread_count, time))?;
