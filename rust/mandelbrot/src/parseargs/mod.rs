@@ -1,13 +1,14 @@
 use crate::customerror::CustomError;
 use num::Complex;
 
-//defaults
+///defaults
 static BOUNDS: (usize, usize) = (5000, 5000);
 static NTHREADS: usize = 8;
 static ROWS_PER_BAND: usize = 1;
 static UPPER_LEFT: Complex<f64> = Complex { re: -1.6, im: 1.2 };
 static LOWER_RIGHT: Complex<f64> = Complex { re: 0.6, im: -1.2 };
 
+///Holds the parsed or default values
 pub struct ParsedArgs {
     pub mechanism: String,
     pub measure: bool,
@@ -19,6 +20,8 @@ pub struct ParsedArgs {
     pub lower_right: Complex<f64>,
 }
 
+///A fancy cli powered by the clap crate. There is a default value for each unspecified option.
+///Run with --help for mor information
 pub fn parsearguments() -> Result<ParsedArgs, CustomError> {
     let matches = clap_app!(Mandelbrot =>
         (version: "1.0")
