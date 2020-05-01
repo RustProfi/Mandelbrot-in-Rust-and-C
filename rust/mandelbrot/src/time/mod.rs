@@ -34,7 +34,7 @@ impl Default for MyTimestamp {
 }
 
 impl MyTimestamp {
-    ///Returns an empty Struct MyTimestamp
+    ///Returns an initialized Struct MyTimestamp
     pub fn new() -> Self {
         MyTimestamp {
             ts: timespec {
@@ -50,7 +50,7 @@ impl MyTimestamp {
             + (end.ts.tv_nsec - self.ts.tv_nsec) as f64 / 1_000_000.0
     }
 
-    ///Call of the c function clock_gettime to get a timestamp.
+    ///Call of the c function clock_gettime to obtain a timestamp.
     pub fn gettime(&mut self, clock: Clock) -> Result<(), CustomError> {
         if unsafe { clock_gettime(clock.value(), &mut self.ts) } == -1 {
             Err(CustomError::TimerError)

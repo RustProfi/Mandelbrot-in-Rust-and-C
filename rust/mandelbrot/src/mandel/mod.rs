@@ -52,8 +52,9 @@ pub fn pixel_to_point(
     );
     Complex {
         re: upper_left.re + pixel.0 as f64 * width / bounds.0 as f64,
-        im: upper_left.im - pixel.1 as f64 * height / bounds.1 as f64, // Why subtraction here? pixel.1 increases as we go down,
-                                                                       // but the imaginary component increases as we go up.
+        // Why subtraction here? pixel.1 increases as we go down,
+        // but the imaginary component increases as we go up.
+        im: upper_left.im - pixel.1 as f64 * height / bounds.1 as f64,
     }
 }
 
@@ -61,11 +62,10 @@ pub fn pixel_to_point(
 
 /// # Arguments
 ///
-/// * `pixels` - A buffer with the length of the number of pixels of the image.
-/// * `bounds` - A pair giving the width and height of the image in pixels.
-/// * `upper_left` - The upper left point on the complex plane designating the area of the image.
-/// * `lower_right` - The lower right point on the complex plane designating the area of the image.
-
+/// * `pixels` - A buffer which holds one grayscale pixel per byte.
+/// * `bounds` - A pair giving the width and height of the buffer.
+/// * `upper_left` - The upper left point on the complex plane corresponding to upper left corner of the buffer.
+/// * `lower_right` - The lower right point on the complex plane corresponding to lower right corner of the buffer.
 pub fn render(
     pixels: &mut [u8],
     bounds: (usize, usize),
@@ -96,11 +96,11 @@ pub fn render(
 
 /// # Arguments
 ///
-/// * `pixels` - A buffer with the length of the number of pixels of the image.
-/// * `offset` - An offset which specify which part of buffer will be mutated.
-/// * `bounds` - A pair giving the width and height of the image in pixels.
-/// * `upper_left` - The upper left point on the complex plane designating the area of the image.
-/// * `lower_right` - The lower right point on the complex plane designating the area of the image.
+/// * `pixels` - A buffer the size of the image which holds one grayscale pixel per byte.
+/// * `offset` - An offset which specify which "chunk" of buffer will be mutated.
+/// * `bounds` - A pair giving the width and height of the chunk.
+/// * `upper_left` - The upper left point on the complex plane corresponding to upper left corner of the chunk.
+/// * `lower_right` - The lower right point on the complex plane corresponding to lower right corner of the chunk.
 pub fn render_threads(
     pixels: Arc<Mutex<Vec<u8>>>,
     offset: usize,
@@ -136,11 +136,11 @@ pub fn render_threads(
 
 /// # Arguments
 ///
-/// * `pixels` - A buffer with the length of the number of pixels of the image.
-/// * `offset` - An offset which specify which part of buffer will be mutated.
-/// * `bounds` - A pair giving the width and height of the image in pixels.
-/// * `upper_left` - The upper left point on the complex plane designating the area of the image.
-/// * `lower_right` - The lower right point on the complex plane designating the area of the image.
+/// * `pixels` - A buffer the size of the image which holds one grayscale pixel per byte.
+/// * `offset` - An offset which specify which "chunk" of buffer will be mutated.
+/// * `bounds` - A pair giving the width and height of the chunk.
+/// * `upper_left` - The upper left point on the complex plane corresponding to upper left corner of the chunk.
+/// * `lower_right` - The lower right point on the complex plane corresponding to lower right corner of the chunk.
 pub fn render_threads_unsafe(
     pixels: Arc<WrappedUnsafeCell<*mut u8>>,
     offset: usize,
@@ -171,13 +171,12 @@ pub fn render_threads_unsafe(
     }
 }
 
-/// Write the buffer `pixels`, whose dimensions are given by `bounds`, to the
-/// file named `filename`.
+/// Write an image to a png file
 
 /// # Arguments
 ///
 /// * `filename` - The name of the image which will be created.
-/// * `pixels` - A filled buffer of pixels per byte in grayscale.
+/// * `pixels` - A buffer holding one pixel per byte in grayscale.
 /// * `bounds` - The dimensions of the image.
 pub fn write_image(
     filename: &str,

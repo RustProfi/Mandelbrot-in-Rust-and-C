@@ -15,6 +15,14 @@ void render_openmp(char *chunk, int width, int height, double complex upper_left
 int write_image(char *filename, char *pixels, int width, int height);
 double compute_time_milis(struct timespec start, struct timespec end);
 
+// Try to determine if c is in the Mandelbrot set, using at most 256
+// iterations due to the grayscale color spectrum of the Png Writer.
+//
+// If c is not a member, return the number of
+// iterations it took for c to leave the circle of radius two centered on the
+// origin. If c seems to be a member (more precisely, if we reached the
+// iteration limit without being able to prove that c is not a member),
+// return 0.
 int escape_mandel_iterations(double complex c) {
         double complex z = 0.0 + 0.0 * I;
         for (int i = 0; i < 256; i++) {
@@ -33,15 +41,17 @@ double complex pixel_to_point(int width, int height,
         double c_height = cimag(upper_left) - cimag(lower_right);
 
         double re = creal(upper_left) + (double) p_colum * c_width / (double) width;
+        // Why subtraction here? p_row increases as we go down,
+        // but the imaginary component increases as we go up.
         double im = cimag(upper_left) - (double) p_row * c_height / (double) height;
         return re + im * I;
 }
 
 
 void *render(void *arguments) {
-        //Ich kann hier nicht überprüfen, ob das array groß genug ist
-        //Ich muss hoffen xD
+        //cast to render_args
         render_args *args = (render_args *) arguments;
+        //there is no performant proove that the array is large enough. Just hope :)
         for (int row = 0; row < args->height; row++) {
                 for (int column = 0; column < args->width; column++) {
                         double complex point = pixel_to_point(args->width, args->height, column, row, args->upper_left, args->lower_right);
@@ -52,8 +62,7 @@ void *render(void *arguments) {
 }
 
 void render_openmp(char *chunk, int width, int height, double complex upper_left, double complex lower_right) {
-        //Ich kann hier nicht überprüfen, ob das array groß genug ist
-        //Ich muss hoffen xD
+        //there is no performant proove that the array is large enough. Just hope :)
         for (int row = 0; row < height; row++) {
                 for (int column = 0; column < width; column++) {
                         double complex point = pixel_to_point(width, height, column, row, upper_left, lower_right);
@@ -110,7 +119,8 @@ int write_image(char *filename, char *pixels, int width, int height) {
 
         png_init_io(png_ptr, fp);
 
-        // Write header (8 bit colour depth)
+        // Write header
+        // Colortype Grayscale 8 Bit
         png_set_IHDR(
                 png_ptr,
                 info_ptr,
@@ -129,11 +139,12 @@ int write_image(char *filename, char *pixels, int width, int height) {
         row = (png_bytep)malloc(1 * width * sizeof(png_byte));
 
         // Write image data
-        for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                        row[x] = pixels[y * width + x];
+        for (int r = 0; r < height; r++) {
+                //copy the row at pixels[r * witdth] byte per byte in row
+                for (int c = 0; c < width; c++) {
+                        row[c] = pixels[r * width + c];
                 }
-
+                //write row
                 png_write_row(png_ptr, row);
         }
 
