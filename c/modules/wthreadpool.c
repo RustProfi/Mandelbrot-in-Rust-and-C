@@ -6,8 +6,7 @@
 #include "mandel.h"
 #include "../C-Thread-Pool/thpool.h"
 
-//-1.0 in case of error
-double time_threadpool(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band, int number_of_threads, int draw) {
+double time_threadpool(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band, int pool_size, int draw) {
         char *pixels;
         int i, chunk_len, arr_len, num_of_jobs;
         double retval;
@@ -43,7 +42,7 @@ double time_threadpool(int width, int height, double complex upper_left, double 
         }
 
         //returns void
-        thpool = thpool_init(number_of_threads);
+        thpool = thpool_init(pool_size);
 
         for(i = 0; i < num_of_jobs; i++) {
                 int offset = chunk_len * i;

@@ -22,7 +22,7 @@ unsafe impl<T> Sync for WrappedUnsafeCell<T> {}
 /// * `bounds` - A pair giving the width and height of the image in pixels.
 /// * `upper_left` - The upper left point on the complex plane designating the area of the image.
 /// * `lower_right` - The lower right point on the complex plane designating the area of the image.
-/// * `number_of_threads` - The number of threads and at the same time the number of chunks.
+/// * `number_of_threads` - The number of threads gives the number of chunks.
 /// * `draw` - Decides whether to write the computed mandelbrot set to png or not.
 pub fn time_threads_unsafe(
     bounds: (usize, usize),
@@ -101,7 +101,7 @@ pub fn time_threads_unsafe(
     Ok(start.compute_time_millis(end))
 }
 
-///Measures for a given base and bounds how long it takes for every number of threads in a
+///Measures how long it takes for every number of threads in a
 ///range from 4 to 80 by repeating the measurement 20 times each. The results are written to a file.
 
 /// # Arguments

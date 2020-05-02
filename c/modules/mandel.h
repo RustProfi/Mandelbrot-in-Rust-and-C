@@ -1,4 +1,4 @@
-#ifndef MANDEL_H_   /* guard */
+#ifndef MANDEL_H_
 #define MANDEL_H_
 
 // Given the row and column of a pixel in the output image, return the
@@ -27,14 +27,15 @@ void *render(void *args);
 // upper left and lower right corners of the chunk.
 void render_openmp(char *chunk, int width, int height, double complex upper_left, double complex lower_right);
 
-// Write an image to a png file
+// Write an image to a png file.
+// Return 0 on success and -1 on failure.
 // Arguments:
 // filneme specify the name of the file
 // A buffer holding one pixel per byte in grayscale
 // width and height giving the dimensions of the image in pixels
 int write_image(char *filename, char *pixels, int width, int height);
 
-// Computes the passed time between two timestamps of type timespec in ms
+// Computes the passed time between two timestamps in ms
 double compute_time_milis(struct timespec start, struct timespec end);
 
 // chunk is a buffer which holds one grayscale pixel per byte

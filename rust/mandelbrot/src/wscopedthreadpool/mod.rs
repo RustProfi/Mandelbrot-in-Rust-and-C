@@ -14,7 +14,7 @@ use std::io::prelude::*;
 /// * `bounds` - A pair giving the width and height of the image in pixels.
 /// * `upper_left` - The upper left point on the complex plane designating the area of the image.
 /// * `lower_right` - The lower right point on the complex plane designating the area of the image.
-/// * `rows_per_band` - The number of rows per band.
+/// * `rows_per_band` - The number of rows per band divided by the height gives the number of chunks.
 /// * `pool_size` - The number of threads the threadpool will be initialized with.
 /// * `draw` - Decides whether to write the computed mandelbrot set to png or not.
 pub fn time_scoped_threadpool(
@@ -55,7 +55,7 @@ pub fn time_scoped_threadpool(
     Ok(start.compute_time_millis(end))
 }
 
-///Measures for a given base and bounds how long it takes for every number of rows per band in a
+///Measures how long it takes for every number of rows per band in a
 ///range from 1 to 80 by repeating the measurement 20 times each. The results are written to a file.
 
 /// # Arguments

@@ -5,7 +5,6 @@
 #include "mandel.h"
 //#include <omp.h>
 
-//-1.0 in case of error
 double time_openmp(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band, int number_of_threads, int draw) {
         char *pixels;
         int i, chunk_len, arr_len, num_of_jobs;
@@ -30,6 +29,11 @@ double time_openmp(int width, int height, double complex upper_left, double comp
                 goto freepixels;
         }
 
+
+        //A much more simple solution would be:
+        //#pragma omp parallel for num_threads(number_of_threads)
+        //The implemented version is a good practice version. The programmer
+        //has to think about which variables will be shared between the threads.
         #pragma omp parallel for default(none) num_threads(number_of_threads) shared(pixels, num_of_jobs, chunk_len, arr_len, rows_per_band, width, height, upper_left, lower_right)
         for(i = 0; i < num_of_jobs; i++) {
                 int offset = chunk_len * i;

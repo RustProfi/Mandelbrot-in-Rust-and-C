@@ -5,7 +5,6 @@
 #include <pthread.h>
 #include "mandel.h"
 
-//-1.0 in case of error
 double time_threads(int width, int height, double complex upper_left, double complex lower_right, int number_of_threads, int draw) {
         char *pixels;
         int i, rows_per_band, chunk_len, arr_len;

@@ -72,13 +72,6 @@ void render_openmp(char *chunk, int width, int height, double complex upper_left
         }
 }
 
-//http://www.labbookpages.co.uk/software/imgProc/files/libPNG/makePNG.c
-//http://www.labbookpages.co.uk/software/imgProc/libPNG.html
-//http://www.libpng.org/pub/png/libpng-1.4.0-manual.pdf
-//Das normale example.c sieht ein 2 Dimensionales Array vor, was meiner Meinung
-//nach alles verkompliziert.
-
-//in case of return 0 everything is ok
 int write_image(char *filename, char *pixels, int width, int height) {
         int code = 0;
         FILE *fp;
