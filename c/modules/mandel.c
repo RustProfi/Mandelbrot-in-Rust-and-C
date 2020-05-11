@@ -22,7 +22,7 @@ double compute_time_milis(struct timespec start, struct timespec end);
 // iterations it took for c to leave the circle of radius two centered on the
 // origin. If c seems to be a member (more precisely, if we reached the
 // iteration limit without being able to prove that c is not a member),
-// return 0.
+// return -1.
 int escape_mandel_iterations(double complex c) {
         double complex z = 0.0 + 0.0 * I;
         for (int i = 0; i < 256; i++) {
@@ -31,7 +31,7 @@ int escape_mandel_iterations(double complex c) {
                         return i;
                 }
         }
-        return 0;
+        return -1;
 }
 
 double complex pixel_to_point(int width, int height,
@@ -56,7 +56,7 @@ void *render(void *arguments) {
                 for (int column = 0; column < args->width; column++) {
                         double complex point = pixel_to_point(args->width, args->height, column, row, args->upper_left, args->lower_right);
                         int iters = escape_mandel_iterations(point);
-                        args->chunk[row * args->width + column] = iters == 0 ? 0 : 255 - iters;
+                        args->chunk[row * args->width + column] = iters == -1 ? 0 : 255 - iters;
                 }
         }
 }
@@ -67,7 +67,7 @@ void render_openmp(char *chunk, int width, int height, double complex upper_left
                 for (int column = 0; column < width; column++) {
                         double complex point = pixel_to_point(width, height, column, row, upper_left, lower_right);
                         int iters = escape_mandel_iterations(point);
-                        chunk[row * width + column] = iters == 0 ? 0 : 255 - iters;
+                        chunk[row * width + column] = iters == -1 ? 0 : 255 - iters;
                 }
         }
 }
