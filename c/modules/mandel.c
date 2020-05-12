@@ -7,6 +7,7 @@
 
 //Prototypes
 int escape_mandel_iterations(double complex c);
+double norm_sqr(double complex z);
 double complex pixel_to_point( int width, int height,
                                int p_colum, int p_row, double complex upper_left,
                                double complex lower_right);
@@ -23,15 +24,21 @@ double compute_time_milis(struct timespec start, struct timespec end);
 // origin. If c seems to be a member (more precisely, if we reached the
 // iteration limit without being able to prove that c is not a member),
 // return -1.
+
 int escape_mandel_iterations(double complex c) {
         double complex z = 0.0 + 0.0 * I;
         for (int i = 0; i < 256; i++) {
                 z = z * z + c;
-                if (cabs(z) > 4.0) {
+                if (norm_sqr(z) > 4.0) {
                         return i;
                 }
         }
         return -1;
+}
+
+// Returns the square of the norm.
+double norm_sqr(double complex z) {
+    return creal(z) * creal(z) + cimag(z) * cimag(z);
 }
 
 double complex pixel_to_point(int width, int height,
