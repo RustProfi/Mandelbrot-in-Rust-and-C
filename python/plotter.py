@@ -61,11 +61,11 @@ plt.plot(rustresultsx, rustresultsy, label='Rust')
 plt.legend()
 plt.title(sys.argv[4])
 plt.xlabel('Threads')
-plt.ylabel('Time(ms)')
+plt.ylabel('Time[ms]')
 #gcc
-plt.annotate('Min. value C with gcc\n%d Threads\n%.2f ms'%(x_min_gcc, y_min_gcc), (x_min_gcc, y_min_gcc), xytext=(x_min_gcc-40, y_min_gcc + 300), bbox=bbox, arrowprops=arrowprops)
+plt.annotate('Min. value C with gcc\n%d Threads\n%.2f ms'%(x_min_gcc, y_min_gcc), (x_min_gcc, y_min_gcc), xytext=(x_min_gcc-50, y_min_gcc + 300), bbox=bbox, arrowprops=arrowprops)
 #clang
-plt.annotate('Min. value C with clang\n%d Threads\n%.2f ms'%(x_min_clang, y_min_clang), (x_min_clang, y_min_clang), xytext=(x_min_clang-10, y_min_clang + 300), bbox=bbox, arrowprops=arrowprops)
+plt.annotate('Min. value C with clang\n%d Threads\n%.2f ms'%(x_min_clang, y_min_clang), (x_min_clang, y_min_clang), xytext=(x_min_clang-50, y_min_clang + 1000), bbox=bbox, arrowprops=arrowprops)
 #Rust
 plt.annotate('Min. value Rust\n%d Threads\n%.2f ms'%(x_min_rust, y_min_rust), (x_min_rust, y_min_rust), xytext=(x_min_rust+10, y_min_rust + 300), bbox=bbox, arrowprops=arrowprops)
 plt.show()
