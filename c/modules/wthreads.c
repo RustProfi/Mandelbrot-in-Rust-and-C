@@ -101,6 +101,7 @@ int measure_workload_threads(int width, int height, double complex upper_left, d
         fp = fopen("c_threads_performance.txt", "w");
         if (!fp) {
                 perror("Could not open file for writing \"c_threads_performance.txt\"");
+                fclose(fp);
                 return -1;
         }
 
@@ -110,6 +111,7 @@ int measure_workload_threads(int width, int height, double complex upper_left, d
                         double res = time_threads(width, height, upper_left, lower_right, thread_count, 0);
                         if(res == -1.0) {
                                 perror("time with threads failed");
+                                fclose(fp);
                                 return -1;
                         }
                         time += res;
@@ -119,6 +121,7 @@ int measure_workload_threads(int width, int height, double complex upper_left, d
                 int printed = fprintf(fp, "%d,%f\n", thread_count, time);
                 if(printed == 0) {
                         perror("Write to file failed");
+                        fclose(fp);
                         return -1;
                 }
         }

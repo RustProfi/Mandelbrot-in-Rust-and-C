@@ -101,6 +101,7 @@ int measure_workload_threadpool(int width, int height, double complex upper_left
         fp = fopen("c_threadpool_performance.txt", "w");
         if (!fp) {
                 perror("Could not open file \"c_threadpool_performance.txt\"");
+                fclose(fp);
                 return -1;
         }
 
@@ -110,6 +111,7 @@ int measure_workload_threadpool(int width, int height, double complex upper_left
                         double res = time_threadpool(width, height, upper_left, lower_right, rows_per_band, pool_size, 0);
                         if(res == -1.0) {
                                 perror("time with threadpool failed");
+                                fclose(fp);
                                 return -1;
                         }
                         time += res;
@@ -119,6 +121,7 @@ int measure_workload_threadpool(int width, int height, double complex upper_left
                 int printed = fprintf(fp, "%d,%f\n", rows_per_band, time);
                 if(printed == 0) {
                         perror("Write to file failed");
+                        fclose(fp);
                         return -1;
                 }
         }

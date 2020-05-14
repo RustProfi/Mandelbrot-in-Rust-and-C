@@ -73,6 +73,7 @@ int measure_workload_openmp(int width, int height, double complex upper_left, do
         fp = fopen("c_openmp_performance.txt", "w");
         if (!fp) {
                 perror("Could not open file \"c_openmp_performance.txt\"");
+                fclose(fp);
                 return -1;
         }
 
@@ -82,6 +83,7 @@ int measure_workload_openmp(int width, int height, double complex upper_left, do
                         double res = time_openmp(width, height, upper_left, lower_right, rows_per_band, thread_count, 0);
                         if(res == -1.0) {
                                 perror("time with openmp failed");
+                                fclose(fp);
                                 return -1;
                         }
                         time += res;
@@ -90,6 +92,7 @@ int measure_workload_openmp(int width, int height, double complex upper_left, do
                 int printed = fprintf(fp, "%d,%f\n", thread_count, time);
                 if(printed == 0) {
                         perror("Write to file failed");
+                        fclose(fp);
                         return -1;
                 }
         }

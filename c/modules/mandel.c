@@ -38,7 +38,7 @@ int escape_mandel_iterations(double complex c) {
 
 // Returns the square of the norm.
 double norm_sqr(double complex z) {
-    return creal(z) * creal(z) + cimag(z) * cimag(z);
+        return creal(z) * creal(z) + cimag(z) * cimag(z);
 }
 
 double complex pixel_to_point(int width, int height,
@@ -137,6 +137,11 @@ int write_image(char *filename, char *pixels, int width, int height) {
 
         // Allocate memory for one row (1 bytes per pixel - Grayscale)
         row = (png_bytep)malloc(1 * width * sizeof(png_byte));
+        if(!row) {
+                perror("malloc failed");
+                code = -1;
+                goto finalise;
+        }
 
         // Write image data
         for (int r = 0; r < height; r++) {
@@ -152,10 +157,10 @@ int write_image(char *filename, char *pixels, int width, int height) {
         png_write_end(png_ptr, NULL);
 
 finalise:
+        if (row) free(row);
         if (fp) fclose(fp);
         if (info_ptr) png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
         if (png_ptr) png_destroy_write_struct(&png_ptr, &info_ptr);
-        if (row) free(row);
 
         return code;
 }
