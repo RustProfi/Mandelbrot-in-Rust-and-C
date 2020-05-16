@@ -9,7 +9,7 @@
 // p_colum, p_row indicating a particular pixel in that image
 // upper_left and lower_right specify the points on the complex plane designating the area of the image.
 double complex pixel_to_point(int width, int height,
-                              int p_colum, int p_row,
+                              int pixel_x, int pixel_y,
                               double complex upper_left,
                               double complex lower_right);
 

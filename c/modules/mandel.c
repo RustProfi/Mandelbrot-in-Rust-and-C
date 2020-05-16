@@ -42,15 +42,16 @@ double norm_sqr(double complex z) {
 }
 
 double complex pixel_to_point(int width, int height,
-                              int p_colum, int p_row, double complex upper_left,
+                              int pixel_x, int pixel_y,
+                              double complex upper_left,
                               double complex lower_right) {
         double c_width = creal(lower_right) - creal(upper_left);
         double c_height = cimag(upper_left) - cimag(lower_right);
 
-        double re = creal(upper_left) + (double) p_colum * c_width / (double) width;
+        double re = creal(upper_left) + (double) pixel_x * c_width / (double) width;
         // Why subtraction here? p_row increases as we go down,
         // but the imaginary component increases as we go up.
-        double im = cimag(upper_left) - (double) p_row * c_height / (double) height;
+        double im = cimag(upper_left) - (double) pixel_y * c_height / (double) height;
         return re + im * I;
 }
 
