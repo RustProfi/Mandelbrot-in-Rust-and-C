@@ -85,7 +85,7 @@ int write_image(char *filename, char *pixels, int width, int height) {
         FILE *fp;
         png_structp png_ptr;
         png_infop info_ptr;
-        png_bytep row;
+        png_bytep row_pointers[height];
 
         // Open file for writing (binary mode)
         fp = fopen(filename, "wb");
@@ -136,29 +136,16 @@ int write_image(char *filename, char *pixels, int width, int height) {
         //write settings
         png_write_info(png_ptr, info_ptr);
 
-        // Allocate memory for one row (1 bytes per pixel - Grayscale)
-        row = (png_bytep)malloc(1 * width * sizeof(png_byte));
-        if(!row) {
-                perror("malloc failed");
-                code = -1;
-                goto finalise;
+        for (int i = 0; i < height; i++) {
+                row_pointers[i] = pixels + i*width;
         }
-
-        // Write image data
-        for (int r = 0; r < height; r++) {
-                //copy the row at pixels[r * witdth] byte per byte in row
-                for (int c = 0; c < width; c++) {
-                        row[c] = pixels[r * width + c];
-                }
-                //write row
-                png_write_row(png_ptr, row);
-        }
+        png_write_image(png_ptr, row_pointers);
 
         // End write
         png_write_end(png_ptr, NULL);
 
 finalise:
-        if (row) free(row);
+        //if (row) free(row);
         if (info_ptr) png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
         if (png_ptr) png_destroy_write_struct(&png_ptr, &info_ptr);
         if (fp) fclose(fp);
