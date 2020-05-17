@@ -44,7 +44,7 @@ double time_openmp(int width, int height, double complex upper_left, double comp
                 double complex band_upper_left = pixel_to_point(width, height, 0, top, upper_left, lower_right);
                 double complex band_lower_right = pixel_to_point(width, height, width, top + band_height, upper_left, lower_right);
 
-                render_openmp(&pixels[offset], width, band_height, band_upper_left, band_lower_right);
+                render_openmp(pixels + offset, width, band_height, band_upper_left, band_lower_right);
         }
 
         if(clock_gettime(CLOCK_MONOTONIC_RAW, &end) == -1) {

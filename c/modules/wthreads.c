@@ -49,7 +49,7 @@ double time_threads(int width, int height, double complex upper_left, double com
                 double complex band_upper_left = pixel_to_point(width, height, 0, top, upper_left, lower_right);
                 double complex band_lower_right = pixel_to_point(width, height, width, top + band_height, upper_left, lower_right);
 
-                args[i]->chunk = &pixels[offset];
+                args[i]->chunk = pixels + offset;
                 args[i]->width = width;
                 args[i]->height = band_height;
                 args[i]->upper_left = band_upper_left;
