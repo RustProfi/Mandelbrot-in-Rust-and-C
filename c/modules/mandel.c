@@ -92,30 +92,30 @@ int write_image(char *filename, char *pixels, int width, int height) {
         if (fp == NULL) {
                 fprintf(stderr, "Could not open file %s for writing\n", filename);
                 code = -1;
-                goto finalise;
+                goto freeall;
         }
 
         // Initialize write structure
         png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
         if (png_ptr == NULL) {
-                fprintf(stderr, "Could not allocate write struct\n");
+                perror("Could not allocate write struct");
                 code = -1;
-                goto finalise;
+                goto freeall;
         }
 
         // Initialize info structure
         info_ptr = png_create_info_struct(png_ptr);
         if (info_ptr == NULL) {
-                fprintf(stderr, "Could not allocate info struct\n");
+                perror("Could not allocate info struct");
                 code = -1;
-                goto finalise;
+                goto freeall;
         }
 
         // Setup Exception handling
         if (setjmp(png_jmpbuf(png_ptr))) {
-                fprintf(stderr, "Error during png creation\n");
+                perror("Error during png creation");
                 code = -1;
-                goto finalise;
+                goto freeall;
         }
 
         png_init_io(png_ptr, fp);
@@ -144,7 +144,7 @@ int write_image(char *filename, char *pixels, int width, int height) {
         // End write
         png_write_end(png_ptr, NULL);
 
-finalise:
+freeall:
         if (info_ptr) png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
         if (png_ptr) png_destroy_write_struct(&png_ptr, &info_ptr);
         if (fp) fclose(fp);
