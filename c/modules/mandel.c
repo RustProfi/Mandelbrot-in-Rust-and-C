@@ -85,7 +85,7 @@ int write_image(char *filename, char *pixels, int width, int height) {
         FILE *fp;
         png_structp png_ptr;
         png_infop info_ptr;
-        png_bytep row_pointers[height];
+        png_byte *row_pointers[height];
 
         // Open file for writing (binary mode)
         fp = fopen(filename, "wb");
