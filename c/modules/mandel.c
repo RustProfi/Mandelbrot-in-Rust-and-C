@@ -136,9 +136,12 @@ int write_image(char *filename, char *pixels, int width, int height) {
         //write settings
         png_write_info(png_ptr, info_ptr);
 
-        for (int i = 0; i < height; i++) {
-                row_pointers[i] = pixels + i*width;
+        //fill the array with pointers to each row.
+        for (int row = 0; row < height; row++) {
+                row_pointers[row] = pixels + row * width;
         }
+
+        //finally write the image
         png_write_image(png_ptr, row_pointers);
 
         // End write
