@@ -87,15 +87,13 @@ int write_image(char *filename, char *pixels, int width, int height) {
         png_infop info_ptr;
         png_byte *row_pointers[height];
 
-        // Open file for writing (binary mode)
-        fp = fopen(filename, "wb");
+        fp = fopen(filename, "w");
         if (fp == NULL) {
                 fprintf(stderr, "Could not open file %s for writing\n", filename);
                 code = -1;
                 goto freeall;
         }
 
-        // Initialize write structure
         png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
         if (png_ptr == NULL) {
                 perror("Could not allocate write struct");
@@ -103,7 +101,6 @@ int write_image(char *filename, char *pixels, int width, int height) {
                 goto freeall;
         }
 
-        // Initialize info structure
         info_ptr = png_create_info_struct(png_ptr);
         if (info_ptr == NULL) {
                 perror("Could not allocate info struct");
@@ -111,7 +108,7 @@ int write_image(char *filename, char *pixels, int width, int height) {
                 goto freeall;
         }
 
-        // Setup Exception handling
+        //Setup error handling
         if (setjmp(png_jmpbuf(png_ptr))) {
                 perror("Error during png creation");
                 code = -1;
@@ -120,8 +117,7 @@ int write_image(char *filename, char *pixels, int width, int height) {
 
         png_init_io(png_ptr, fp);
 
-        // Write header
-        // Colortype Grayscale 8 Bit
+        //Write header with information, Colortype 8 Bit Grayscale
         png_set_IHDR(
                 png_ptr,
                 info_ptr,
@@ -143,8 +139,6 @@ int write_image(char *filename, char *pixels, int width, int height) {
 
         //finally write the image
         png_write_image(png_ptr, row_pointers);
-
-        // End write
         png_write_end(png_ptr, NULL);
 
 freeall:
