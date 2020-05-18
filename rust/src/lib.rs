@@ -1,9 +1,9 @@
 #[macro_use]
 extern crate clap;
-pub mod customerror;
+mod customerror;
 pub mod mandel;
-pub mod parseargs;
 pub mod time;
+pub mod parseargs;
 pub mod wcrossbeam;
 pub mod wrayon;
 pub mod wscopedthreadpool;
