@@ -21,8 +21,8 @@ pub struct ParsedArgs {
 }
 
 ///A fancy cli powered by the clap crate. There is a default value for each unspecified option.
-///Run with --help for mor information
-pub fn parsearguments() -> Result<ParsedArgs, CustomError> {
+///Run with --help for more information
+pub fn parse_arguments() -> Result<ParsedArgs, CustomError> {
     let matches = clap_app!(Mandelbrot =>
         (version: "1.0")
         (author: "Marno Janetzky <janetzkymarno@gmail.com>")

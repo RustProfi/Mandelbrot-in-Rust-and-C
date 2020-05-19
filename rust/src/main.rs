@@ -1,4 +1,4 @@
-use mandelbrot::parseargs::parsearguments;
+use mandelbrot::parseargs::parse_arguments;
 use mandelbrot::wcrossbeam::{measure_workload_crossbeam, time_crossbeam};
 use mandelbrot::wrayon::{measure_workload_rayon, time_rayon};
 use mandelbrot::wscopedthreadpool::{measure_workload_scoped_threadpool, time_scoped_threadpool};
@@ -8,7 +8,7 @@ use std::process::exit;
 
 ///A basic tui with error handling
 fn main() {
-    let args = match parsearguments() {
+    let args = match parse_arguments() {
         Ok(k) => k,
         Err(err) => {
             println!("{}", err);
