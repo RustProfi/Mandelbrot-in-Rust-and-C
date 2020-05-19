@@ -34,7 +34,7 @@ pub fn parse_arguments() -> Result<ParsedArgs, CustomError> {
         (@arg Rows_per_band: +takes_value -r --rows "Specify the rows per band. Hint: Only necessary for scoped_threadpool and rayon")
         (@arg DrawOff: -d --drawoff "Disables writing the image to a png file")
         //Unfortunately, this has to be written in a row, otherwise it will mess up the formatting
-        (@arg ComplexCoords: +takes_value -c --complexcoords "Specify an upper left and a lower right point on the complex plane.\nAttention: Enter a leading , because otherwise clap will interpret a - as a unknown argument.\nExample: For upper left = -1.6 + 1.2 * I and lower right = 0.6 - 1.2 * I, enter: ,-1.6,1.2,0.6,-1.2")
+        (@arg ComplexCoords: +takes_value -c --complexcoords "Specify an upper left and a lower right point on the complex plane.\nAttention: Enter a leading ',' because otherwise clap will interpret a '-' as a unknown argument.\nExample: For upper left = -1.6 + 1.2 * I and lower right = 0.6 - 1.2 * I, enter: ,-1.6,1.2,0.6,-1.2")
     ).get_matches();
 
     let mechanism = matches.value_of("Mechanism").unwrap();
