@@ -14,8 +14,8 @@ double time_threads(int width, int height, double complex upper_left, double com
         render_args* args[number_of_threads];
 
         arr_len = width * height;
-        //if rows_per_band doesn't fit perfectly in arr_len without rest, it must be round upward to make sure that the bands cover the entire image.
-        rows_per_band = arr_len % (height / number_of_threads) == 0 ? height / number_of_threads : height / number_of_threads + 1;
+        //if number_of_threads doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
+        rows_per_band = height % number_of_threads == 0 ? height / number_of_threads : height / number_of_threads + 1;
         chunk_len = rows_per_band * width;
 
         pixels = (char*)malloc(arr_len * sizeof(char));

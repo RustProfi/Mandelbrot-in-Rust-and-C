@@ -23,8 +23,8 @@ pub fn time_crossbeam(
     draw: bool,
 ) -> Result<f64, CustomError> {
     let mut pixels = vec![0; bounds.0 * bounds.1];
-    //if rows_per_band doesn't fit perfectly in pixels_len without rest, it must be round upward to make sure that the bands cover the entire image.
-    let rows_per_band = if (bounds.0 * bounds.1) % (bounds.1 / number_of_threads) == 0 {
+    //if number_of_threads doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
+    let rows_per_band = if bounds.1 % number_of_threads == 0 {
         bounds.1 / number_of_threads
     } else {
         bounds.1 / number_of_threads + 1
