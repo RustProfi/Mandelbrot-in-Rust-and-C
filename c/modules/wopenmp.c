@@ -8,7 +8,6 @@
 double time_openmp(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band, int number_of_threads, int draw) {
         char *pixels;
         int i, chunk_len, arr_len, num_of_jobs;
-        double retval;
         struct timespec start, end;
 
         arr_len = width * height;
@@ -19,16 +18,14 @@ double time_openmp(int width, int height, double complex upper_left, double comp
         pixels = (char*)malloc(arr_len * sizeof(char));
         if(!pixels) {
                 perror("malloc failed");
-                retval = -1;
-                goto freepixels;
+                return -1.0;
         }
 
         if(clock_gettime(CLOCK_MONOTONIC_RAW, &start) == -1) {
                 perror("clock gettime failed");
-                retval = -1;
-                goto freepixels;
+                free(pixels);
+                return -1.0;
         }
-
 
         //A much more simple solution would be:
         //#pragma omp parallel for num_threads(number_of_threads)
@@ -49,23 +46,19 @@ double time_openmp(int width, int height, double complex upper_left, double comp
 
         if(clock_gettime(CLOCK_MONOTONIC_RAW, &end) == -1) {
                 perror("clock gettime failed");
-                retval = -1;
-                goto freepixels;
+                free(pixels);
+                return -1.0;
         }
 
         if(draw) {
                 if(write_image("mandel.png", pixels, width, height) == -1) {
                         perror("write image failed");
-                        retval = -1;
-                        goto freepixels;
+                        free(pixels);
+                        return -1.0;
                 }
         }
 
-        retval = compute_time_milis(start, end);
-
-freepixels:
-        free(pixels);
-        return retval;
+        return compute_time_milis(start, end);
 }
 
 int measure_workload_openmp(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band) {

@@ -8,10 +8,9 @@
 double time_threads(int width, int height, double complex upper_left, double complex lower_right, int number_of_threads, int draw) {
         char *pixels;
         int i, rows_per_band, chunk_len, arr_len;
-        double retval;
         struct timespec start, end;
         pthread_t thread_id[number_of_threads];
-        render_args* args[number_of_threads];
+        render_args args[number_of_threads];
 
         arr_len = width * height;
         //if number_of_threads doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
@@ -21,23 +20,13 @@ double time_threads(int width, int height, double complex upper_left, double com
         pixels = (char*)malloc(arr_len * sizeof(char));
         if(!pixels) {
                 perror("malloc failed");
-                retval = -1;
-                goto freepixels;
-        }
-
-        for(i = 0; i < number_of_threads; ++i) {
-                args[i] = (render_args*)malloc(sizeof(render_args));
-                if(!args[i]) {
-                        perror("malloc failed");
-                        retval = -1;
-                        goto freeall;
-                }
+                return -1.0;
         }
 
         if(clock_gettime(CLOCK_MONOTONIC_RAW, &start) == -1) {
                 perror("clock gettime failed");
-                retval = -1;
-                goto freeall;
+                free(pixels);
+                return -1.0;
         }
 
         for(i = 0; i < number_of_threads; i++) {
@@ -49,51 +38,43 @@ double time_threads(int width, int height, double complex upper_left, double com
                 double complex band_upper_left = pixel_to_point(width, height, 0, top, upper_left, lower_right);
                 double complex band_lower_right = pixel_to_point(width, height, width, top + band_height, upper_left, lower_right);
 
-                args[i]->chunk = pixels + offset;
-                args[i]->width = width;
-                args[i]->height = band_height;
-                args[i]->upper_left = band_upper_left;
-                args[i]->lower_right = band_lower_right;
+                args[i].chunk = pixels + offset;
+                args[i].width = width;
+                args[i].height = band_height;
+                args[i].upper_left = band_upper_left;
+                args[i].lower_right = band_lower_right;
 
-                if(pthread_create(&thread_id[i], NULL, render, args[i]) != 0) {
+                if(pthread_create(&thread_id[i], NULL, render, &args[i]) != 0) {
                         perror("create thread failed");
-                        retval = -1;
-                        goto freeall;
+                        free(pixels);
+                        return -1.0;
                 }
         }
 
         for(i = 0; i < number_of_threads; i++) {
                 if(pthread_join(thread_id[i], NULL) != 0) {
                         perror("join thread failed");
-                        retval = -1;
-                        goto freeall;
+                        free(pixels);
+                        return -1.0;
                 };
         }
 
         if(clock_gettime(CLOCK_MONOTONIC_RAW, &end) == -1) {
                 perror("clock gettime failed");
-                retval = -1;
-                goto freeall;
+                free(pixels);
+                return -1.0;
         }
 
         if(draw) {
                 if(write_image("mandel.png", pixels, width, height) == -1) {
                         perror("write image failed");
-                        retval = -1;
-                        goto freeall;
+                        free(pixels);
+                        return -1.0;
                 }
         }
 
-        retval = compute_time_milis(start, end);
-
-freeall:
-        for(i = 0; i < number_of_threads; i++) {
-                if(args[i])
-                        free(args[i]);
-        }
-freepixels:
         free(pixels);
-        return retval;
+        return compute_time_milis(start, end);
 }
 
 int measure_workload_threads(int width, int height, double complex upper_left, double complex lower_right) {

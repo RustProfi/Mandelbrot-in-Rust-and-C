@@ -17,28 +17,18 @@ double time_threadpool(int width, int height, double complex upper_left, double 
         //if rows_per_band doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
         num_of_jobs = height % rows_per_band == 0 ? height / rows_per_band : height / rows_per_band + 1;
         chunk_len = rows_per_band * width;
-        render_args* args[num_of_jobs];
+        render_args args[num_of_jobs];
 
         pixels = (char*)malloc(arr_len * sizeof(char));
         if(!pixels) {
                 perror("malloc failed");
-                retval = -1;
-                goto freepixels;
-        }
-
-        for(i = 0; i < num_of_jobs; ++i) {
-                args[i] = (render_args*)malloc(sizeof(render_args));
-                if(!args[i]) {
-                        perror("malloc failed");
-                        retval = -1;
-                        goto freeall;
-                }
+                return -1.0;
         }
 
         if(clock_gettime(CLOCK_MONOTONIC_RAW, &start) == -1) {
                 perror("clock gettime failed");
                 retval = -1;
-                goto freeall;
+                goto freepixels;
         }
 
         //returns void
@@ -53,13 +43,13 @@ double time_threadpool(int width, int height, double complex upper_left, double 
                 double complex band_upper_left = pixel_to_point(width, height, 0, top, upper_left, lower_right);
                 double complex band_lower_right = pixel_to_point(width, height, width, top + band_height, upper_left, lower_right);
 
-                args[i]->chunk = pixels + offset;
-                args[i]->width = width;
-                args[i]->height = band_height;
-                args[i]->upper_left = band_upper_left;
-                args[i]->lower_right = band_lower_right;
+                args[i].chunk = pixels + offset;
+                args[i].width = width;
+                args[i].height = band_height;
+                args[i].upper_left = band_upper_left;
+                args[i].lower_right = band_lower_right;
 
-                if(thpool_add_work(thpool, (void*)render, args[i]) == -1) {
+                if(thpool_add_work(thpool, (void*)render, &args[i]) == -1) {
                         perror("submit job to the threadpool failed");
                         retval = -1;
                         goto freeall;
@@ -67,7 +57,6 @@ double time_threadpool(int width, int height, double complex upper_left, double 
         }
 
         thpool_wait(thpool);
-
 
         if(clock_gettime(CLOCK_MONOTONIC_RAW, &end) == -1) {
                 perror("clock gettime failed");
@@ -87,10 +76,6 @@ double time_threadpool(int width, int height, double complex upper_left, double 
 
 freeall:
         thpool_destroy(thpool);
-        for(i = 0; i < num_of_jobs; i++) {
-                if(args[i])
-                        free(args[i]);
-        }
 freepixels:
         free(pixels);
         return retval;
