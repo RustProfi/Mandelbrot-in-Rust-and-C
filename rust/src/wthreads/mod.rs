@@ -76,7 +76,7 @@ pub fn time_threads(
     end.gettime(Clock::ClockMonotonicRaw)?;
 
     if draw {
-        write_image("mandel.png", &*pixels.lock().unwrap(), bounds)?;
+        write_image("mandel.png", &pixels.lock().unwrap(), bounds)?;
     }
 
     Ok(start.compute_time_millis(end))
