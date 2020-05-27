@@ -12,7 +12,7 @@ double complex pixel_to_point( int width, int height,
                                int p_colum, int p_row, double complex upper_left,
                                double complex lower_right);
 void *render(void *args);
-void render_openmp(char *chunk, int width, int height, double complex upper_left, double complex lower_right);
+void render_openmp(char *band, int width, int height, double complex upper_left, double complex lower_right);
 int write_image(char *filename, char *pixels, int width, int height);
 double compute_time_milis(struct timespec start, struct timespec end);
 
@@ -64,18 +64,18 @@ void *render(void *arguments) {
                 for (int column = 0; column < args->width; column++) {
                         double complex point = pixel_to_point(args->width, args->height, column, row, args->upper_left, args->lower_right);
                         int iters = escape_mandel_iterations(point);
-                        args->chunk[row * args->width + column] = iters == -1 ? 0 : 255 - iters;
+                        args->band[row * args->width + column] = iters == -1 ? 0 : 255 - iters;
                 }
         }
 }
 
-void render_openmp(char *chunk, int width, int height, double complex upper_left, double complex lower_right) {
+void render_openmp(char *band, int width, int height, double complex upper_left, double complex lower_right) {
         //there is no performant proove that the array is large enough. Just hope :)
         for (int row = 0; row < height; row++) {
                 for (int column = 0; column < width; column++) {
                         double complex point = pixel_to_point(width, height, column, row, upper_left, lower_right);
                         int iters = escape_mandel_iterations(point);
-                        chunk[row * width + column] = iters == -1 ? 0 : 255 - iters;
+                        band[row * width + column] = iters == -1 ? 0 : 255 - iters;
                 }
         }
 }

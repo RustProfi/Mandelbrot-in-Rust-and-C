@@ -97,10 +97,10 @@ pub fn render(
 /// # Arguments
 ///
 /// * `pixels` - A buffer the size of the image which holds one grayscale pixel per byte.
-/// * `offset` - An offset which specify which "chunk" of buffer will be mutated.
-/// * `bounds` - A pair giving the width and height of the chunk.
-/// * `upper_left` - The upper left point on the complex plane corresponding to upper left corner of the chunk.
-/// * `lower_right` - The lower right point on the complex plane corresponding to lower right corner of the chunk.
+/// * `offset` - An offset which specify which "band" of buffer will be mutated.
+/// * `bounds` - A pair giving the width and height of the band.
+/// * `upper_left` - The upper left point on the complex plane corresponding to upper left corner of the band.
+/// * `lower_right` - The lower right point on the complex plane corresponding to lower right corner of the band.
 pub fn render_threads(
     pixels: Arc<Mutex<Vec<u8>>>,
     offset: usize,
@@ -137,10 +137,10 @@ pub fn render_threads(
 /// # Arguments
 ///
 /// * `pixels` - A buffer the size of the image which holds one grayscale pixel per byte.
-/// * `offset` - An offset which specify which "chunk" of buffer will be mutated.
-/// * `bounds` - A pair giving the width and height of the chunk.
-/// * `upper_left` - The upper left point on the complex plane corresponding to upper left corner of the chunk.
-/// * `lower_right` - The lower right point on the complex plane corresponding to lower right corner of the chunk.
+/// * `offset` - An offset which specify which "band" of buffer will be mutated.
+/// * `bounds` - A pair giving the width and height of the band.
+/// * `upper_left` - The upper left point on the complex plane corresponding to upper left corner of the band.
+/// * `lower_right` - The lower right point on the complex plane corresponding to lower right corner of the band.
 pub fn render_threads_unsafe(
     pixels: Arc<WrappedUnsafeCell<*mut u8>>,
     offset: usize,

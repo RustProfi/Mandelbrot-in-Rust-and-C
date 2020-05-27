@@ -16,7 +16,7 @@ use std::thread;
 /// * `bounds` - A pair giving the width and height of the image in pixels.
 /// * `upper_left` - The upper left point on the complex plane designating the area of the image.
 /// * `lower_right` - The lower right point on the complex plane designating the area of the image.
-/// * `number_of_threads` - The number of threads gives the number of chunks.
+/// * `number_of_threads` - The number of threads gives the number of bands.
 /// * `draw` - Decides whether to write the computed mandelbrot set to png or not.
 pub fn time_threads(
     bounds: (usize, usize),
@@ -33,24 +33,24 @@ pub fn time_threads(
     } else {
         bounds.1 / number_of_threads + 1
     };
-    let chunk_len = rows_per_band * bounds.0;
+    let band_len = rows_per_band * bounds.0;
     let mut threads = vec![];
 
     let mut start = MyTimestamp::new();
     let mut end = MyTimestamp::new();
 
     start.gettime(Clock::ClockMonotonicRaw)?;
-    //Iterate over arr_size in steps to create selfmade chunks.
-    for (i, offset) in (0..arr_len).step_by(chunk_len).enumerate() {
+    //Iterate over arr_size in steps to create selfmade bands.
+    for (i, offset) in (0..arr_len).step_by(band_len).enumerate() {
         let pixels_ref = pixels.clone();
-        //The last chunk can be smaller than the other chunks
-        let check_chunk_len = if arr_len - offset > chunk_len {
-            chunk_len
+        //The last band can be smaller than the other bands
+        let check_band_len = if arr_len - offset > band_len {
+            band_len
         } else {
             arr_len - offset
         };
         let top = rows_per_band * i;
-        let height = check_chunk_len / bounds.0;
+        let height = check_band_len / bounds.0;
         let band_bounds = (bounds.0, height);
         let band_upper_left = pixel_to_point(bounds, (0, top), upper_left, lower_right);
         let band_lower_right =

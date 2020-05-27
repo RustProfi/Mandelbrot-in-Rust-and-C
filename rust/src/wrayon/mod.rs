@@ -14,7 +14,7 @@ use std::io::prelude::*;
 /// * `bounds` - A pair giving the width and height of the image in pixels.
 /// * `upper_left` - The upper left point on the complex plane designating the area of the image.
 /// * `lower_right` - The lower right point on the complex plane designating the area of the image.
-/// * `rows_per_band` - The number of rows per band divided by the height gives the number of chunks
+/// * `rows_per_band` - The number of rows per band divided by the height gives the number of bands
 /// * `draw` - Decides whether to write the computed mandelbrot set to png or not.
 pub fn time_rayon(
     bounds: (usize, usize),
@@ -24,14 +24,14 @@ pub fn time_rayon(
     draw: bool,
 ) -> Result<f64, CustomError> {
     let mut pixels = vec![0; bounds.0 * bounds.1];
-    let chunk_len = rows_per_band * bounds.0;
+    let band_len = rows_per_band * bounds.0;
 
     let mut start = MyTimestamp::new();
     let mut end = MyTimestamp::new();
 
     start.gettime(Clock::ClockMonotonicRaw)?;
     pixels
-        .par_chunks_mut(chunk_len)
+        .par_chunks_mut(band_len)
         .into_par_iter()
         .enumerate()
         .for_each(|(i, band)| {

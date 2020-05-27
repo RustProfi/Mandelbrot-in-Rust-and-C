@@ -13,7 +13,7 @@ use std::io::prelude::*;
 /// * `bounds` - A pair giving the width and height of the image in pixels.
 /// * `upper_left` - The upper left point on the complex plane designating the area of the image.
 /// * `lower_right` - The lower right point on the complex plane designating the area of the image.
-/// * `number_of_threads` - The number of threads gives the number of chunks
+/// * `number_of_threads` - The number of threads gives the number of bands
 /// * `draw` - Decides whether to write the computed mandelbrot set to png or not.
 pub fn time_crossbeam(
     bounds: (usize, usize),

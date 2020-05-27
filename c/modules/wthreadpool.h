@@ -7,7 +7,7 @@
 // Arguments:
 // width, height of the image in pixels
 // upper_left and lower_right specify the points on the complex plane designating the area of the image.
-// rows_per_band divided by the height gives the number of chunks
+// rows_per_band divided by the height gives the number of bands
 // pool_size the number of threads the threadpool will be initialized with
 // draw decides whether to write the computed mandelbrot set to png or not.
 double time_threadpool(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band, int pool_size, int draw);

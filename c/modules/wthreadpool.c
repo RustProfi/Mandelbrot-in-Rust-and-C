@@ -8,7 +8,7 @@
 
 double time_threadpool(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band, int pool_size, int draw) {
         char *pixels;
-        int i, chunk_len, arr_len, num_of_jobs;
+        int i, band_len, arr_len, num_of_jobs;
         double retval;
         struct timespec start, end;
         threadpool thpool;
@@ -16,7 +16,7 @@ double time_threadpool(int width, int height, double complex upper_left, double 
         arr_len = width * height;
         //if rows_per_band doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
         num_of_jobs = height % rows_per_band == 0 ? height / rows_per_band : height / rows_per_band + 1;
-        chunk_len = rows_per_band * width;
+        band_len = rows_per_band * width;
         render_args args[num_of_jobs];
 
         pixels = (char*)malloc(arr_len * sizeof(char));
@@ -35,15 +35,15 @@ double time_threadpool(int width, int height, double complex upper_left, double 
         thpool = thpool_init(pool_size);
 
         for(i = 0; i < num_of_jobs; i++) {
-                int offset = chunk_len * i;
-                //in case of last chunk is smaller than the previous ones.
-                int check_chunk_len = arr_len - offset > chunk_len ? chunk_len : arr_len - offset;
+                int offset = band_len * i;
+                //in case of last band is smaller than the previous ones.
+                int check_band_len = arr_len - offset > band_len ? band_len : arr_len - offset;
                 int top = rows_per_band * i;
-                int band_height = check_chunk_len / width;
+                int band_height = check_band_len / width;
                 double complex band_upper_left = pixel_to_point(width, height, 0, top, upper_left, lower_right);
                 double complex band_lower_right = pixel_to_point(width, height, width, top + band_height, upper_left, lower_right);
 
-                args[i].chunk = pixels + offset;
+                args[i].band = pixels + offset;
                 args[i].width = width;
                 args[i].height = band_height;
                 args[i].upper_left = band_upper_left;
