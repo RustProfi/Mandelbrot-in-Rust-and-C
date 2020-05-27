@@ -119,10 +119,8 @@ pub fn render_threads(
                 None => 0,
                 Some(count) => 255 - count as u8,
             };
-
             //Assuming no thread will panic
-            let mut guard = pixels.lock().unwrap();
-            guard[offset + (row * bounds.0 + column)] = iterations;
+            pixels.lock().unwrap()[offset + (row * bounds.0 + column)] = iterations;
         }
     }
     Ok(())
