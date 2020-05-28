@@ -149,7 +149,7 @@ pub fn render_threads_unsafe(
     unsafe {
         //The get() function returns a *mut T pointer which needs to be dereferenced
         //to get the Pointer.
-        let ptr = *pixels.0.get();
+        let pointer = *pixels.0.get();
 
         //Check for every pixel wether it is in the mandelbrot set or not.
         for row in 0..bounds.1 {
@@ -161,7 +161,7 @@ pub fn render_threads_unsafe(
                     Some(count) => 255 - count as u8,
                 };
                 ptr::write(
-                    ptr.offset(offset as isize + (row * bounds.0 + column) as isize),
+                    pointer.offset(offset as isize + (row * bounds.0 + column) as isize),
                     mandel_time,
                 );
             }

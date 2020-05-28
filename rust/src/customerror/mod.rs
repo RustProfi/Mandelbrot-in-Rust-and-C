@@ -63,7 +63,6 @@ impl From<image::ImageError> for CustomError {
     }
 }
 
-
 impl From<std::num::ParseIntError> for CustomError {
     fn from(error: std::num::ParseIntError) -> Self {
         CustomError::ParseIntError(error)

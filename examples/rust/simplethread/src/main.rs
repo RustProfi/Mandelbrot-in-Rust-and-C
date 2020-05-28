@@ -10,7 +10,7 @@ fn main() {
     //create a new reference to arr
     //and increment the reference count by 1
     let arr_ref = arr.clone();
-    //Closure takes Ownership of arr_ref
+    //Closure takes Ownership of arr_ref due to move
     if thread::spawn(move || fillvec(arr_ref)).join().is_err() {
         eprintln!("Thread paniced");
         exit(1);
