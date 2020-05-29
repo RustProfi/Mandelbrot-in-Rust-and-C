@@ -85,16 +85,7 @@ pub fn time_threads_unsafe(
     }
     end.gettime(Clock::ClockMonotonicRaw)?;
 
-    /*unsafe {
-        if draw {
-            //Rebuild the vector from Raw pointer. In this case vec will automatically be dropped
-            let rebuilt = Vec::from_raw_parts(*pixels.0.get(), len, cap);
-            write_image("mandel.png", &rebuilt, bounds)?;
-        } else {
-            //if there was no rebuild from raw parts it must be manually be dropped.
-            mem::ManuallyDrop::drop(&mut vec);
-        }
-    }*/
+    //Extract value to allow it to be dropable again
     let vec = mem::ManuallyDrop::into_inner(vec);
     if draw {
         write_image("mandel.png", &vec, bounds)?;
