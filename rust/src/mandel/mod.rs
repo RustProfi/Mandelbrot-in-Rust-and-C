@@ -160,10 +160,8 @@ pub fn render_threads_unsafe(
                     None => 0,
                     Some(count) => 255 - count as u8,
                 };
-                ptr::write(
-                    pointer.offset(offset as isize + (row * bounds.0 + column) as isize),
-                    mandel_time,
-                );
+
+                pointer.offset(offset as isize + (row * bounds.0 + column) as isize).write(mandel_time);
             }
         }
     }
