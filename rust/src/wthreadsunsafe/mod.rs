@@ -32,13 +32,10 @@ pub fn time_threads_unsafe(
     draw: bool,
 ) -> Result<f64, CustomError> {
     let arr_len = bounds.0 * bounds.1;
-    let vec = vec![0 as u8; arr_len];
     //Inhibit the compiler from automatically call the destructor to gain full control of v.
-    let mut vec = mem::ManuallyDrop::new(vec);
+    let mut vec = mem::ManuallyDrop::new(vec![0 as u8; arr_len]);
     //create a Raw Pointer of v
     let p: *mut u8 = vec.as_mut_ptr();
-    let len = vec.len();
-    let cap = vec.capacity();
 
     let pixels = Arc::new(WrappedUnsafeCell(UnsafeCell::new(p)));
     //if number_of_threads doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
@@ -88,7 +85,7 @@ pub fn time_threads_unsafe(
     }
     end.gettime(Clock::ClockMonotonicRaw)?;
 
-    unsafe {
+    /*unsafe {
         if draw {
             //Rebuild the vector from Raw pointer. In this case vec will automatically be dropped
             let rebuilt = Vec::from_raw_parts(*pixels.0.get(), len, cap);
@@ -97,6 +94,10 @@ pub fn time_threads_unsafe(
             //if there was no rebuild from raw parts it must be manually be dropped.
             mem::ManuallyDrop::drop(&mut vec);
         }
+    }*/
+    let vec = mem::ManuallyDrop::into_inner(vec);
+    if draw {
+        write_image("mandel.png", &vec, bounds)?;
     }
 
     Ok(start.compute_time_millis(end))

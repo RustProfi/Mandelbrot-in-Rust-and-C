@@ -4,7 +4,6 @@ use image::png::PNGEncoder;
 use image::ColorType;
 use num::Complex;
 use std::fs::File;
-use std::ptr;
 use std::sync::Arc;
 use std::sync::Mutex;
 
@@ -161,7 +160,9 @@ pub fn render_threads_unsafe(
                     Some(count) => 255 - count as u8,
                 };
 
-                pointer.offset(offset as isize + (row * bounds.0 + column) as isize).write(mandel_time);
+                pointer
+                    .offset((offset + (row * bounds.0 + column)) as isize)
+                    .write(mandel_time);
             }
         }
     }
