@@ -147,8 +147,8 @@ pub fn render_threads_unsafe(
     lower_right: Complex<f64>,
 ) {
     unsafe {
-        //The get() function returns a *mut T pointer which needs to be dereferenced
-        //to get the Pointer.
+        //The get() function returns a *mut T pointer which needs to be derferenced
+        //to get its content which is the *mut u8 pointer to the array.
         let pointer = *pixels.0.get();
 
         //Check for every pixel wether it is in the mandelbrot set or not.
