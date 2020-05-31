@@ -5,7 +5,6 @@ use num::Complex;
 use std::cell::UnsafeCell;
 use std::fs::File;
 use std::io::prelude::*;
-use std::mem;
 use std::sync::Arc;
 use std::thread;
 
@@ -32,12 +31,11 @@ pub fn time_threads_unsafe(
     draw: bool,
 ) -> Result<f64, CustomError> {
     let arr_len = bounds.0 * bounds.1;
-    //Inhibit the compiler from automatically call the destructor to gain full control of v.
-    let mut vec = mem::ManuallyDrop::new(vec![0 as u8; arr_len]);
+    let mut vec = vec![0 as u8; arr_len];
     //create a Raw Pointer of v
-    let p: *mut u8 = vec.as_mut_ptr();
+    let pointer: *mut u8 = vec.as_mut_ptr();
 
-    let pixels = Arc::new(WrappedUnsafeCell(UnsafeCell::new(p)));
+    let pixels = Arc::new(WrappedUnsafeCell(UnsafeCell::new(pointer)));
     //if number_of_threads doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
     let rows_per_band = if bounds.1 % number_of_threads == 0 {
         bounds.1 / number_of_threads
@@ -85,8 +83,7 @@ pub fn time_threads_unsafe(
     }
     end.gettime(Clock::ClockMonotonicRaw)?;
 
-    //Extract value to allow it to be dropable again
-    let vec = mem::ManuallyDrop::into_inner(vec);
+    //Extract value to allow vec to be dropable again
     if draw {
         write_image("mandel.png", &vec, bounds)?;
     }
