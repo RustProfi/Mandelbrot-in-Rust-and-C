@@ -31,11 +31,11 @@ pub fn time_threads_unsafe(
     draw: bool,
 ) -> Result<f64, CustomError> {
     let arr_len = bounds.0 * bounds.1;
-    let mut vec = vec![0 as u8; arr_len];
+    let mut pixels = vec![0 as u8; arr_len];
     //create a Raw Pointer of v
-    let pointer: *mut u8 = vec.as_mut_ptr();
+    let p: *mut u8 = pixels.as_mut_ptr();
+    let pointer = Arc::new(WrappedUnsafeCell(UnsafeCell::new(p)));
 
-    let pixels = Arc::new(WrappedUnsafeCell(UnsafeCell::new(pointer)));
     //if number_of_threads doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
     let rows_per_band = if bounds.1 % number_of_threads == 0 {
         bounds.1 / number_of_threads
@@ -52,7 +52,7 @@ pub fn time_threads_unsafe(
     start.gettime(Clock::ClockMonotonicRaw)?;
     //Iterate over arr_size in steps to create selfmade bands.
     for (i, offset) in (0..arr_len).step_by(band_len).enumerate() {
-        let pixels_ref = pixels.clone();
+        let pointer_ref = pointer.clone();
         //The last band can be smaller than the other bands
         let check_band_len = if arr_len - offset > band_len {
             band_len
@@ -67,7 +67,7 @@ pub fn time_threads_unsafe(
             pixel_to_point(bounds, (bounds.0, top + height), upper_left, lower_right);
         threads.push(thread::spawn(move || {
             render_threads_unsafe(
-                pixels_ref,
+                pointer_ref,
                 offset,
                 band_bounds,
                 band_upper_left,
@@ -85,7 +85,7 @@ pub fn time_threads_unsafe(
 
     //Extract value to allow vec to be dropable again
     if draw {
-        write_image("mandel.png", &vec, bounds)?;
+        write_image("mandel.png", &pixels, bounds)?;
     }
 
     Ok(start.compute_time_millis(end))
