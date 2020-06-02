@@ -9,7 +9,6 @@ pub enum CustomError {
     UnfittingArray,
     TimerError,
     ThreadPanic,
-    CrossbeamError,
     InvalidArgument,
 }
 
@@ -23,7 +22,6 @@ impl fmt::Display for CustomError {
             CustomError::UnfittingArray => write!(f, "Array size is to small for bounds."),
             CustomError::TimerError => write!(f, "Unsafe C Timer threw an error"),
             CustomError::ThreadPanic => write!(f, "Thread paniced"),
-            CustomError::CrossbeamError => write!(f, "Crossbeam child threads paniced"),
             CustomError::InvalidArgument => write!(
                 f,
                 "Invalid Argument. Rerun with --help for more Information."
@@ -42,7 +40,6 @@ impl fmt::Debug for CustomError {
             CustomError::UnfittingArray => write!(f, "Array size is to small for bounds."),
             CustomError::TimerError => write!(f, "Unsafe C Timer threw an error"),
             CustomError::ThreadPanic => write!(f, "Thread paniced"),
-            CustomError::CrossbeamError => write!(f, "Crossbeam child threads paniced"),
             CustomError::InvalidArgument => write!(
                 f,
                 "Invalid Argument. Rerun with --help for more Information."
@@ -77,6 +74,6 @@ impl From<std::num::ParseFloatError> for CustomError {
 
 impl From<std::boxed::Box<dyn std::any::Any + std::marker::Send>> for CustomError {
     fn from(_error: std::boxed::Box<dyn std::any::Any + std::marker::Send>) -> Self {
-        CustomError::CrossbeamError
+        CustomError::ThreadPanic
     }
 }

@@ -68,11 +68,9 @@ pub fn time_threads(
     }
 
     for thread in threads {
-        match thread.join() {
-            Ok(result) => result?,
-            Err(_) => return Err(CustomError::ThreadPanic),
-        }
+        thread.join()??;
     }
+    
     end.gettime(Clock::ClockMonotonicRaw)?;
 
     if draw {

@@ -77,9 +77,7 @@ pub fn time_threads_unsafe(
     }
 
     for thread in threads {
-        if thread.join().is_err() {
-            return Err(CustomError::ThreadPanic);
-        };
+        thread.join()?;
     }
     end.gettime(Clock::ClockMonotonicRaw)?;
 
