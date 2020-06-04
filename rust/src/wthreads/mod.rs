@@ -70,7 +70,7 @@ pub fn time_threads(
     for thread in threads {
         thread.join()??;
     }
-    
+
     end.gettime(Clock::ClockMonotonicRaw)?;
 
     if draw {

@@ -31,8 +31,12 @@ double time_threadpool(int width, int height, double complex upper_left, double 
                 goto freepixels;
         }
 
-        //returns void
         thpool = thpool_init(pool_size);
+        if(!thpool) {
+                perror("threadpool creation failed");
+                retval = -1;
+                goto freepixels;
+        }
 
         for(i = 0; i < num_of_jobs; i++) {
                 int offset = band_len * i;

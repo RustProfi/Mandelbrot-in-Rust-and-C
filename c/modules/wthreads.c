@@ -53,7 +53,7 @@ double time_threads(int width, int height, double complex upper_left, double com
 
         for(i = 0; i < number_of_threads; i++) {
                 if(pthread_join(thread_id[i], NULL) != 0) {
-                        perror("join thread failed");
+                        perror("joining the thread failed");
                         free(pixels);
                         return -1.0;
                 };
