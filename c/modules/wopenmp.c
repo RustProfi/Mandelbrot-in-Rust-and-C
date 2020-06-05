@@ -3,7 +3,6 @@
 #include <complex.h>
 #include <time.h>
 #include "mandel.h"
-#include <omp.h>
 
 double time_openmp(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band, int number_of_threads, int draw) {
         char *pixels;
