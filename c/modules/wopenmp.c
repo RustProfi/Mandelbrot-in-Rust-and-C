@@ -30,7 +30,7 @@ double time_openmp(int width, int height, double complex upper_left, double comp
         //#pragma omp parallel for num_threads(number_of_threads)
         //The implemented version is a good practice version. The programmer
         //has to think about which variables will be shared between the threads.
-        #pragma omp parallel for default(none) num_threads(number_of_threads) shared(pixels, num_of_jobs, band_len, arr_len, rows_per_band, width, height, upper_left, lower_right)
+        #pragma omp parallel for num_threads(number_of_threads) default(none) shared(pixels, num_of_jobs, band_len, arr_len, rows_per_band, width, height, upper_left, lower_right)
         for(i = 0; i < num_of_jobs; i++) {
                 int offset = band_len * i;
                 //in case of last band is smaller than the previous ones.
