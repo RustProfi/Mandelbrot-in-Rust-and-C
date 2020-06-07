@@ -57,6 +57,7 @@ double time_openmp(int width, int height, double complex upper_left, double comp
                 }
         }
 
+        free(pixels);
         return compute_time_milis(start, end);
 }
 
