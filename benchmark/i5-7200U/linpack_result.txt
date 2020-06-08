@@ -1,0 +1,17 @@
+Enter array size (q to quit) [200]:  Memory required:  79K.
+
+
+LINPACK benchmark, Double precision.
+Machine precision:  15 digits.
+Array size 100 X 100.
+Average rolled and unrolled performance:
+
+    Reps Time(s) DGEFA   DGESL  OVERHEAD    KFLOPS
+----------------------------------------------------
+    8192   0.72  69.04%   5.80%  25.16%  2669903.689
+   16384   1.45  69.05%   5.81%  25.14%  2668702.418
+   32768   2.90  69.04%   5.78%  25.18%  2669483.859
+   65536   5.79  69.04%   5.80%  25.16%  2669603.270
+  131072  11.59  69.04%   5.81%  25.16%  2668912.193
+
+Enter array size (q to quit) [200]:  
