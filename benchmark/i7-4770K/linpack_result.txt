@@ -1,3 +1,4 @@
+Intel Core i7-4770K
 LINPACK benchmark, Double precision.
 Machine precision:  15 digits.
 Array size 100 X 100.
