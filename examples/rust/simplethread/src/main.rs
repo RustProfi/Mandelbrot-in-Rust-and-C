@@ -18,11 +18,11 @@ fn main() {
     println!("{:?}", arr.lock().unwrap());
 } //arr gets dropped and freed finally here because no other
 
-fn fillvec(arr: Arc<Mutex<Vec<i32>>>) {
+fn fillvec(arr_ref: Arc<Mutex<Vec<i32>>>) {
     //Acquire the lock assuming the Ok case
-    let mut guard = arr.lock().unwrap();
+    let mut guard = arr_ref.lock().unwrap();
     for i in 0..guard.len() {
         guard[i] = (i + 1) as i32;
     }
 } //guard gets dropped here and lock is released
-  //arr gets dropped and reference count is decremented by 1
+  //arr_ref gets dropped and reference count is decremented by 1
