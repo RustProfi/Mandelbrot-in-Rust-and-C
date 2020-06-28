@@ -5,7 +5,7 @@
 #include <png.h>
 #include "mandel.h"
 
-//Prototypes
+// Prototypes
 int escape_mandel_iterations(double complex c);
 double norm_sqr(double complex z);
 double complex pixel_to_point( int width, int height,
@@ -57,9 +57,9 @@ double complex pixel_to_point(int width, int height,
 
 
 void *render(void *arguments) {
-        //cast to render_args
+        // cast to render_args
         render_args *args = (render_args *) arguments;
-        //there is no performant proove that the array is large enough. Just hope :)
+        // there is no performant proove that the array is large enough. Just hope :)
         for (int row = 0; row < args->height; row++) {
                 for (int column = 0; column < args->width; column++) {
                         double complex point = pixel_to_point(args->width, args->height, column, row, args->upper_left, args->lower_right);
@@ -70,7 +70,7 @@ void *render(void *arguments) {
 }
 
 void render_openmp(char *band, int width, int height, double complex upper_left, double complex lower_right) {
-        //there is no performant proove that the array is large enough. Just hope :)
+        // there is no performant proove that the array is large enough. Just hope :)
         for (int row = 0; row < height; row++) {
                 for (int column = 0; column < width; column++) {
                         double complex point = pixel_to_point(width, height, column, row, upper_left, lower_right);
@@ -108,7 +108,7 @@ int write_image(char *filename, char *pixels, int width, int height) {
                 goto freeall;
         }
 
-        //Setup error handling
+        // Setup error handling
         if (setjmp(png_jmpbuf(png_ptr))) {
                 perror("Error during png creation");
                 code = -1;
@@ -117,7 +117,7 @@ int write_image(char *filename, char *pixels, int width, int height) {
 
         png_init_io(png_ptr, fp);
 
-        //Write header with information, Colortype 8 Bit Grayscale
+        // Write header with information, Colortype 8 Bit Grayscale
         png_set_IHDR(
                 png_ptr,
                 info_ptr,
@@ -129,15 +129,15 @@ int write_image(char *filename, char *pixels, int width, int height) {
                 PNG_FILTER_TYPE_DEFAULT
                 );
 
-        //write settings
+        // write settings
         png_write_info(png_ptr, info_ptr);
 
-        //fill the array with pointers to each row.
+        // fill the array with pointers to each row.
         for (int row = 0; row < height; row++) {
                 row_pointers[row] = pixels + row * width;
         }
 
-        //finally write the image
+        // finally write the image
         png_write_image(png_ptr, row_pointers);
         png_write_end(png_ptr, NULL);
 

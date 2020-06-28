@@ -90,12 +90,12 @@ pub fn render(
 
 ///Render a rectangle of the Mandelbrot set into a buffer of pixels.
 ///
-///This is a modification of the render function that can be used safely between threads without
-///having to use an external crate which provides a scope environment.
+///This is a modification of the render function that can be used safely between threads
+///with the standard library.
 
 /// # Arguments
 ///
-/// * `pixels` - A buffer the size of the image which holds one grayscale pixel per byte.
+/// * `pixels` - An Arc and Mutex including a buffer the size of the image which holds one grayscale pixel per byte.
 /// * `offset` - An offset which specify which "band" of buffer will be mutated.
 /// * `bounds` - A pair giving the width and height of the band.
 /// * `upper_left` - The upper left point on the complex plane corresponding to upper left corner of the band.
@@ -127,13 +127,12 @@ pub fn render_threads(
 
 ///Render a rectangle of the Mandelbrot set into a buffer of pixels.
 ///
-///This is a modification of the render function that can be used safely between threads without
-///having to use an external crate which provides a scope environment. In Addititon this function
-///uses unsafe code so no locking mechanism is used.
+///This is a modification of the render function that can be used between threads with the standard
+///library using unsafe code to avoid Mutex.
 
 /// # Arguments
 ///
-/// * `pixels` - A buffer the size of the image which holds one grayscale pixel per byte.
+/// * `pixels` - A Raw Pointer to a buffer the size of the image which holds one grayscale pixel per byte.
 /// * `offset` - An offset which specify which "band" of buffer will be mutated.
 /// * `bounds` - A pair giving the width and height of the band.
 /// * `upper_left` - The upper left point on the complex plane corresponding to upper left corner of the band.
@@ -160,6 +159,7 @@ pub fn render_threads_unsafe(
                     Some(count) => 255 - count as u8,
                 };
 
+                //write unsafely directly through pointer
                 pointer
                     .offset((offset + (row * bounds.0 + column)) as isize)
                     .write(mandel_time);

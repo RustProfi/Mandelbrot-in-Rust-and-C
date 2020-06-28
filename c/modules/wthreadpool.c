@@ -14,7 +14,7 @@ double time_threadpool(int width, int height, double complex upper_left, double 
         threadpool thpool;
 
         arr_len = width * height;
-        //if rows_per_band doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
+        // if rows_per_band doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
         num_of_jobs = height % rows_per_band == 0 ? height / rows_per_band : height / rows_per_band + 1;
         band_len = rows_per_band * width;
         render_args args[num_of_jobs];
@@ -40,7 +40,7 @@ double time_threadpool(int width, int height, double complex upper_left, double 
 
         for(i = 0; i < num_of_jobs; i++) {
                 int offset = band_len * i;
-                //in case of last band is smaller than the previous ones.
+                // in case of last band is smaller than the previous ones.
                 int check_band_len = arr_len - offset > band_len ? band_len : arr_len - offset;
                 int top = rows_per_band * i;
                 int band_height = check_band_len / width;

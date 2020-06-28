@@ -19,9 +19,13 @@ impl fmt::Display for CustomError {
             CustomError::ImageError(ref e) => write!(f, "{}", e),
             CustomError::ParseIntError(ref e) => write!(f, "{}", e),
             CustomError::ParseFloatError(ref e) => write!(f, "{}", e),
-            CustomError::UnfittingArray => write!(f, "Array size is to small for bounds."),
-            CustomError::TimerError => write!(f, "Unsafe C Timer threw an error"),
-            CustomError::ThreadPanic => write!(f, "Thread paniced"),
+            CustomError::UnfittingArray => {
+                write!(f, "The Array size is to small for the specified bounds.")
+            }
+            CustomError::TimerError => {
+                write!(f, "The unsafe call of Systemcall clock_gettime threw an error")
+            }
+            CustomError::ThreadPanic => write!(f, "A Thread paniced"),
             CustomError::InvalidArgument => write!(
                 f,
                 "Invalid Argument. Rerun with --help for more Information."
@@ -37,9 +41,13 @@ impl fmt::Debug for CustomError {
             CustomError::ImageError(ref e) => write!(f, "{}", e),
             CustomError::ParseIntError(ref e) => write!(f, "{}", e),
             CustomError::ParseFloatError(ref e) => write!(f, "{}", e),
-            CustomError::UnfittingArray => write!(f, "Array size is to small for bounds."),
-            CustomError::TimerError => write!(f, "Unsafe C Timer threw an error"),
-            CustomError::ThreadPanic => write!(f, "Thread paniced"),
+            CustomError::UnfittingArray => {
+                write!(f, "The Array size is to small for the specified bounds.")
+            }
+            CustomError::TimerError => {
+                write!(f, "The unsafe call of Systemcall clock_gettime threw an error")
+            }
+            CustomError::ThreadPanic => write!(f, "A Thread paniced"),
             CustomError::InvalidArgument => write!(
                 f,
                 "Invalid Argument. Rerun with --help for more Information."

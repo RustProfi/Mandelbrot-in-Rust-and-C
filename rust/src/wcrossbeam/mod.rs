@@ -13,7 +13,7 @@ use std::io::prelude::*;
 /// * `bounds` - A pair giving the width and height of the image in pixels.
 /// * `upper_left` - The upper left point on the complex plane designating the area of the image.
 /// * `lower_right` - The lower right point on the complex plane designating the area of the image.
-/// * `number_of_threads` - The number of threads gives the number of bands
+/// * `number_of_threads` - The number of threads specify the number of bands.
 /// * `draw` - Decides whether to write the computed mandelbrot set to png or not.
 pub fn time_crossbeam(
     bounds: (usize, usize),
@@ -23,13 +23,13 @@ pub fn time_crossbeam(
     draw: bool,
 ) -> Result<f64, CustomError> {
     let mut pixels = vec![0; bounds.0 * bounds.1];
-    //if number_of_threads doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
+    // if number_of_threads doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
     let rows_per_band = if bounds.1 % number_of_threads == 0 {
         bounds.1 / number_of_threads
     } else {
         bounds.1 / number_of_threads + 1
     };
-    //Get non overlapping bands of the image.
+    // Get non overlapping bands of the image.
     let bands: Vec<&mut [u8]> = pixels.chunks_mut(rows_per_band * bounds.0).collect();
 
     let mut start = MyTimestamp::new();
@@ -51,7 +51,7 @@ pub fn time_crossbeam(
                 Ok(())
             }));
         }
-        
+
         for handle in handles {
             handle.join()??;
         }

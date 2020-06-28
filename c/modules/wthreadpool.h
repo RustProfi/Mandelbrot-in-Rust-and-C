@@ -2,12 +2,12 @@
 #define WTHREADPOOL_H_
 
 // Measure in ms how long it takes to compute an image of the mandelbrot set in parallel
-// using a free to use extern library threadpool.
+// using an extern threadpool library with free License.
 // Return the ms on succes or -1 on failure
 // Arguments:
 // width, height of the image in pixels
 // upper_left and lower_right specify the points on the complex plane designating the area of the image.
-// rows_per_band divided by the height gives the number of bands
+// rows_per_band specifies how big a band will be
 // pool_size the number of threads the threadpool will be initialized with
 // draw decides whether to write the computed mandelbrot set to png or not.
 double time_threadpool(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band, int pool_size, int draw);

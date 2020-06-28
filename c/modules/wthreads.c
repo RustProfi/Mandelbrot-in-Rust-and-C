@@ -13,7 +13,7 @@ double time_threads(int width, int height, double complex upper_left, double com
         render_args args[number_of_threads];
 
         arr_len = width * height;
-        //if number_of_threads doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
+        // if number_of_threads doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
         rows_per_band = height % number_of_threads == 0 ? height / number_of_threads : height / number_of_threads + 1;
         band_len = rows_per_band * width;
 
@@ -31,7 +31,7 @@ double time_threads(int width, int height, double complex upper_left, double com
 
         for(i = 0; i < number_of_threads; i++) {
                 int offset = band_len * i;
-                //in case of last band is smaller than the previous ones.
+                // in case of last band is smaller than the previous ones.
                 int check_band_len = arr_len - offset > band_len ? band_len : arr_len - offset;
                 int top = rows_per_band * i;
                 int band_height = check_band_len / width;

@@ -7,7 +7,7 @@
 // Arguments:
 // width, height of the image in pixels
 // upper_left and lower_right specify the points on the complex plane designating the area of the image.
-// number_of_threads gives the number of bands.
+// number_of_threads specify the number of bands.
 // draw decides whether to write the computed mandelbrot set to png or not.
 double time_threads(int width, int height, double complex upper_left, double complex lower_right, int number_of_threads, int draw);
 

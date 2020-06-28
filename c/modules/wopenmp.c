@@ -10,7 +10,7 @@ double time_openmp(int width, int height, double complex upper_left, double comp
         struct timespec start, end;
 
         arr_len = width * height;
-        //if rows_per_band doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
+        // if rows_per_band doesn't fit perfectly in height without rest, it must be round upward to make sure that the bands cover the entire image.
         num_of_jobs = height % rows_per_band == 0 ? height / rows_per_band : height / rows_per_band + 1;
         band_len = rows_per_band * width;
 
@@ -26,10 +26,6 @@ double time_openmp(int width, int height, double complex upper_left, double comp
                 return -1.0;
         }
 
-        //A much more simple solution would be:
-        //#pragma omp parallel for num_threads(number_of_threads)
-        //The implemented version is a good practice version. The programmer
-        //has to think about which variables will be shared between the threads.
         #pragma omp parallel for num_threads(number_of_threads) default(none) shared(pixels, num_of_jobs, band_len, arr_len, rows_per_band, width, height, upper_left, lower_right)
         for(i = 0; i < num_of_jobs; i++) {
                 int offset = band_len * i;

@@ -7,9 +7,9 @@
 // Arguments:
 // width, height of the image in pixels
 // upper_left and lower_right specify the points on the complex plane designating the area of the image.
-// rows_per_band divided by the height gives the number of bands
+// rows_per_band specifies how big a band will be
 // number_of_threads the number of threads to run with
-// draw decides whether to write the computed mandelbrot set to png or not.
+// draw decides whether to write the computed mandelbrot set to png or not
 double time_openmp(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band, int number_of_threads, int draw);
 
 // Measures how long it takes for every number of rows_per_band in a
@@ -18,8 +18,8 @@ double time_openmp(int width, int height, double complex upper_left, double comp
 
 // Arguments
 // width, height of the image in pixels
-// upper_left and lower_right specify the points on the complex plane designating the area of the image.
-// rows_per_band divided by the height gives the number of bands. For best results the best value is probably between 1 and 5.
+// upper_left and lower_right specify the points on the complex plane designating the area of the image
+// rows_per_band specify how large a job will be
 int measure_workload_openmp(int width, int height, double complex upper_left, double complex lower_right, int rows_per_band);
 
 #endif

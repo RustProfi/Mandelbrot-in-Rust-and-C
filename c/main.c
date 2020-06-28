@@ -17,7 +17,7 @@ static double complex LOWER_RIGHT = 0.6 - 1.2 * I;
 
 
 //run with
-//gcc -o mandel main.c modules/wthreads.c modules/mandel.c modules/wthreadpool.c modules/wopenmp.c C-Thread-Pool/thpool.c -lm -lpng -pthread -fopenmp -Ofast
+//gcc -o mandelbrot main.c modules/wthreads.c modules/mandel.c modules/wthreadpool.c modules/wopenmp.c C-Thread-Pool/thpool.c -lpng -pthread -fopenmp -Ofast
 int main(int argc, char *argv[]) {
 
         if(argc == 1 || argc > 3) {
@@ -27,8 +27,6 @@ int main(int argc, char *argv[]) {
                 exit(EXIT_FAILURE);
         }
 
-        //Performance check for threads
-        //Runs 20x for each thread_count.
         if(!strcmp(argv[1], "threads") || !strcmp(argv[1], "th") || !strcmp(argv[1], "all")) {
                 if(argv[2] != NULL && !strcmp(argv[2], "-m")) {
                         if(measure_workload_threads(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT) == -1) {
@@ -48,9 +46,6 @@ int main(int argc, char *argv[]) {
 
         }
 
-        //Performance check for threadpool
-        //Runs 20x for each rows_per_band.
-        //Threadpool always with 8 threads.
         if(!strcmp(argv[1], "threadpool") || !strcmp(argv[1], "tp") || !strcmp(argv[1], "all")) {
                 if(argv[2] != NULL && !strcmp(argv[2], "-m")) {
                         if(measure_workload_threadpool(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 8) == -1) {
@@ -70,8 +65,6 @@ int main(int argc, char *argv[]) {
 
         }
 
-        //Performance check for openmp
-        //Runs 20x for each thread_count.
         if(!strcmp(argv[1], "openmp") || !strcmp(argv[1], "op") || !strcmp(argv[1], "all")) {
                 if(argv[2] != NULL && !strcmp(argv[2], "-m")) {
                         if(measure_workload_openmp(WIDTH, HEIGHT, UPPER_LEFT, LOWER_RIGHT, 1) == -1) {
